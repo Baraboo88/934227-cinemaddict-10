@@ -1,14 +1,14 @@
 'use strict';
 
+const NUMBER_OF_FILMS_MAIN = 5;
+
+const NUMBER_OF_FILMS_ADDITIONAL = 2;
+
 const headerBlock = document.querySelector(`.header`);
 
 const mainBlock = document.querySelector(`.main`);
 
-const scriptBlock = document.querySelector(`script`);
-
-const NUMBER_OF_FILMS_MAIN = 5;
-
-const NUMBER_OF_FILMS_ADDITIONAL = 2;
+const footerBlock = document.querySelector(`.footer`);
 
 const addProfileBlock = () => {
   return `<section class="header__profile profile">
@@ -257,6 +257,12 @@ const addFilmDetails = () => {
 const render = (parentBlock, blockToAdd, position = `beforeend`) =>
   parentBlock.insertAdjacentHTML(position, blockToAdd());
 
+const repeat = (count, fn) => {
+  Array(count)
+    .fill(``)
+    .forEach(fn);
+};
+
 render(headerBlock, addProfileBlock);
 
 render(mainBlock, addNavigationBlock);
@@ -281,13 +287,10 @@ render(filmsBlock, addTopRatesBlock);
 
 render(filmsBlock, addMostComBlock);
 
-const extraBlocks = document.querySelectorAll(`.films-list--extra`);
+const elFilmLists = document.querySelectorAll(`.films-list--extra .films-list__container`);
 
-extraBlocks.forEach((el) => {
-  const elFilmList = el.querySelector(`.films-list__container`);
-  for (let i = 0; i < NUMBER_OF_FILMS_ADDITIONAL; i++) {
-    render(elFilmList, addFilmCard);
-  }
-});
+for (const elFilmList of elFilmLists) {
+  repeat(NUMBER_OF_FILMS_ADDITIONAL, () => render(elFilmList, addFilmCard));
+}
 
-render(scriptBlock, addFilmDetails, `beforebegin`);
+render(footerBlock, addFilmDetails, `afterend`);
