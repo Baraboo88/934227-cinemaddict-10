@@ -279,9 +279,7 @@ render(filmsListBlock, addShowMore);
 
 const filmsContainer = document.querySelector(`.films-list__container`);
 
-for (let i = 0; i < NUMBER_OF_FILMS_MAIN; i++) {
-  render(filmsContainer, addFilmCard);
-}
+repeat(NUMBER_OF_FILMS_MAIN, () => render(filmsContainer, addFilmCard));
 
 render(filmsBlock, addTopRatesBlock);
 
