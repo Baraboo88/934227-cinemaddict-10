@@ -14,4 +14,5 @@ module.exports = {
     compress: true,
     watchContentBase: true
   },
+  mode: `development`
 };
