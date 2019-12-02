@@ -1,11 +1,13 @@
 export const addProfileBlock = (number) => {
   const getNickName = (num) => {
-    if (num > 150) {
-      return `Movie Monster`;
-    } else if (num > 100) {
-      return `Movie Madness`;
-    } else {
+    if (num > 21) {
       return `Movie Buff`;
+    } else if (num > 10) {
+      return `Fan`;
+    } else if (num > 0) {
+      return `Novice`;
+    } else {
+      return ``;
     }
   };
 

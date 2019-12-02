@@ -9,7 +9,7 @@ const comments = [
 
 const usersNames = [`Tim Macoveev`, `John Doe`, `Janna d'Arc`];
 
-const emoji = [`puke.png`, `sleeping.png`, `angry.png`];
+const emoji = [`puke.png`, `sleeping.png`, `angry.png`, `smile.png`, `trophy.png`];
 
 const getDate = () => new Date(new Date().setDate(new Date().getDate() - Math.floor(Math.random() * 10)));
 

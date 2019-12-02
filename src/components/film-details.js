@@ -11,7 +11,7 @@ export const addFilmDetails = (data) => {
     releaseDate,
     runTime,
     country,
-    genders,
+    genres,
     description,
     poster,
     comments
@@ -26,7 +26,7 @@ export const addFilmDetails = (data) => {
     return dateDiff > 0 ? getDays(dateDiff) : `Today`;
   };
 
-  const renderCommets = () => {
+  const renderComments = () => {
     return comments.map((el) => {
       return `<li class="film-details__comment">
             <span class="film-details__comment-emoji">
@@ -44,6 +44,9 @@ export const addFilmDetails = (data) => {
     }).join(`\n`);
   };
 
+  const getReleaseDate = () => `${releaseDate.getDate() < 10 ? `0` + releaseDate.getDate() : releaseDate.getDate()} ${monthNames[releaseDate.getMonth()]} ${releaseDate.getFullYear()}`;
+
+  const getRuntime = () => `${Math.floor(runTime / 60)}h ${runTime % 60 < 10 ? `0` + (runTime % 60) : runTime % 60}m`;
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -85,11 +88,11 @@ export const addFilmDetails = (data) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${releaseDate.getDate() < 10 ? `0` + releaseDate.getDate() : releaseDate.getDate()} ${monthNames[releaseDate.getMonth()]} ${releaseDate.getFullYear()}</td>
+              <td class="film-details__cell">${getReleaseDate()}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${Math.floor(runTime / 60)}h ${runTime % 60 < 10 ? `0` + (runTime % 60) : runTime % 60}m</td>
+              <td class="film-details__cell">${getRuntime()}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
@@ -98,7 +101,7 @@ export const addFilmDetails = (data) => {
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
               <td class="film-details__cell">
-                ${generateGenres(genders)}
+                ${generateGenres(genres)}
                 </td>
             </tr>
           </table>
@@ -126,8 +129,8 @@ export const addFilmDetails = (data) => {
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
         <ul class="film-details__comments-list">
-        
-        ${renderCommets()}          
+
+        ${renderComments()}
         </ul>
 
         <div class="film-details__new-comment">

@@ -1,7 +1,7 @@
 import {getRandomNumber, getRandomArrayElement} from './../util';
 import {getComments} from './comments';
-const countries = [`USA`, `Russia`, `France`];
 
+const countries = [`USA`, `Russia`, `France`];
 const actors = [
   `Lee Aaker`,
   `Willie Aames`,
@@ -18,7 +18,6 @@ const actors = [
 ];
 
 const genres = [`Action`, `Adventure`, `Comedy`, `Crime`, `Drama`, `Horror`];
-
 const films = [
   `Green Mile`,
   `Forrest Gump`,
@@ -48,17 +47,13 @@ const filmsPosters = [
 
 const templateString = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`;
 
-const splitedString = templateString
-  .split(`.`)
-  .slice(0, -1)
-  .map((el) => el.trim());
+const splittedString = templateString.split(`. `);
 
-const getThreeRandomEl = (arr) =>
-  [...Array(1 + getRandomNumber(2))].map(() => getRandomArrayElement(arr));
+const getRandomElNumberFromArr = (arr, number) => arr.sort(() => Math.random() - 0.5).slice(0, 1 + getRandomNumber(number - 1));
 
 const getFilmTemplate = () => {
   const description = [...Array(1 + getRandomNumber(2, 0))]
-    .map(() => getRandomArrayElement(splitedString))
+    .map(() => getRandomArrayElement(splittedString))
     .join(`. `);
 
   const filmMark = getRandomNumber(90) / 10;
@@ -72,11 +67,11 @@ const getFilmTemplate = () => {
     name: getRandomArrayElement(films),
     filmMark,
     director: getRandomArrayElement(actors),
-    writers: new Set(getThreeRandomEl(actors)),
-    actors: new Set(getThreeRandomEl(actors)),
+    writers: new Set(getRandomElNumberFromArr(actors, 3)),
+    actors: new Set(getRandomElNumberFromArr(actors, 3)),
     releaseDate,
     country: getRandomArrayElement(countries),
-    genders: new Set(getThreeRandomEl(genres)),
+    genres: new Set(getRandomElNumberFromArr(genres, 3)),
     description,
     poster: getRandomArrayElement(filmsPosters),
     runTime,

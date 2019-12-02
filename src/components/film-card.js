@@ -7,7 +7,7 @@ export const addFilmCard = (card) => {
     filmMark,
     releaseDate,
     runTime,
-    genders,
+    genres,
     description,
     poster,
     comments
@@ -19,7 +19,7 @@ export const addFilmCard = (card) => {
           <p class="film-card__info">
             <span class="film-card__year">${releaseDate.getFullYear()}</span>
             <span class="film-card__duration">${getFilmDuration(runTime)}</span>
-            <span class="film-card__genre">${generateGenres(genders)}</span>
+            <span class="film-card__genre">${generateGenres(genres)}</span>
           </p>
           <img src="./images/posters/${poster}" alt="" class="film-card__poster">
           <p class="film-card__description">${description}</p>
