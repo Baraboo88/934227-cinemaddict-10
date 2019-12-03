@@ -1,7 +1,7 @@
-import {monthNames} from './../util';
+import {createElement, monthNames} from './../util';
 import {generateGenres} from './../util';
 
-export const addFilmDetails = (data) => {
+const addFilmDetails = (data) => {
   const {
     name,
     filmMark,
@@ -20,15 +20,15 @@ export const addFilmDetails = (data) => {
   const getDays = (days) => (days > 1 ? `${days} days` : `${days} day`);
 
   const getDateFormatted = (elDate) => {
-
     const dateDiff = new Date(new Date() - elDate).getDate();
 
     return dateDiff > 0 ? getDays(dateDiff) : `Today`;
   };
 
   const renderComments = () => {
-    return comments.map((el) => {
-      return `<li class="film-details__comment">
+    return comments
+      .map((el) => {
+        return `<li class="film-details__comment">
             <span class="film-details__comment-emoji">
               <img src="./images/emoji/${el.emoji}" width="55" height="55" alt="emoji">
             </span>
@@ -41,12 +41,17 @@ export const addFilmDetails = (data) => {
               </p>
             </div>
           </li>`;
-    }).join(`\n`);
+      })
+      .join(`\n`);
   };
 
-  const getReleaseDate = () => `${releaseDate.getDate() < 10 ? `0` + releaseDate.getDate() : releaseDate.getDate()} ${monthNames[releaseDate.getMonth()]} ${releaseDate.getFullYear()}`;
+  const getReleaseDate = () =>
+    `${releaseDate.getDate() < 10 ? `0` + releaseDate.getDate() : releaseDate.getDate()} ${
+      monthNames[releaseDate.getMonth()]
+    } ${releaseDate.getFullYear()}`;
 
-  const getRuntime = () => `${Math.floor(runTime / 60)}h ${runTime % 60 < 10 ? `0` + (runTime % 60) : runTime % 60}m`;
+  const getRuntime = () =>
+    `${Math.floor(runTime / 60)}h ${runTime % 60 < 10 ? `0` + (runTime % 60) : runTime % 60}m`;
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -167,3 +172,25 @@ export const addFilmDetails = (data) => {
   </form>
 </section>`;
 };
+
+export default class FilmDetails {
+  constructor(data) {
+    this._element = null;
+    this._data = data;
+  }
+
+  getTemplate() {
+    return addFilmDetails(this._data);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

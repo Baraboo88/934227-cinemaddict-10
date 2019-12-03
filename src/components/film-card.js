@@ -1,17 +1,9 @@
 import {getFilmDuration} from './../util';
 import {generateGenres} from './../util';
+import {createElement} from './../util';
 
-export const addFilmCard = (card) => {
-  const {
-    name,
-    filmMark,
-    releaseDate,
-    runTime,
-    genres,
-    description,
-    poster,
-    comments
-  } = card;
+const addFilmCard = (card) => {
+  const {name, filmMark, releaseDate, runTime, genres, description, poster, comments} = card;
 
   return `<article class="film-card">
           <h3 class="film-card__title">${name}</h3>
@@ -31,3 +23,25 @@ export const addFilmCard = (card) => {
           </form> 
         </article>`;
 };
+
+export default class FilmCard {
+  constructor(card) {
+    this._element = null;
+    this._card = card;
+  }
+
+  getTemplate() {
+    return addFilmCard(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

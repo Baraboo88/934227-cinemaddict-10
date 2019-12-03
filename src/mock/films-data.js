@@ -1,5 +1,6 @@
 import {getRandomNumber, getRandomArrayElement} from './../util';
 import {getComments} from './comments';
+import {shuffleArray} from "./../util";
 
 const countries = [`USA`, `Russia`, `France`];
 const actors = [
@@ -49,7 +50,7 @@ const templateString = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
 const splittedString = templateString.split(`. `);
 
-const getRandomElNumberFromArr = (arr, number) => arr.sort(() => Math.random() - 0.5).slice(0, 1 + getRandomNumber(number - 1));
+const getRandomElNumberFromArr = (arr, number) => shuffleArray(arr).slice(0, 1 + getRandomNumber(number - 1));
 
 const getFilmTemplate = () => {
   const description = [...Array(1 + getRandomNumber(2, 0))]
