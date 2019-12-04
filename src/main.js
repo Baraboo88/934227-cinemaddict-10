@@ -8,12 +8,13 @@ import TopRated from './components/top-rated';
 import MostCommented from './components/most-commented';
 import FilmDetails from './components/film-details';
 import FooterStat from './components/footer-stat';
+import NoMovies from './components/no-movies';
 import {getFilmsTemplate} from './mock/films-data';
 import {generateFilters} from './mock/filters';
 import {render} from './util';
 import {renderPosition} from './util';
 
-const NUMBER_OF_FILMS_MAIN = 3;
+const NUMBER_OF_FILMS_MAIN = 6;
 const NUMBER_OF_FILMS_START = 5;
 const NUMBER_OF_FILMS_ADD = 5;
 let showFilmsCount = NUMBER_OF_FILMS_ADD;
@@ -28,15 +29,30 @@ const getTwoTopElOfArr = (arr, comparator) => arr.sort(comparator).slice(0, 2);
 const getTwoTopRates = (arr) => getTwoTopElOfArr(arr, (a, b) => b.filmMark - a.filmMark);
 const getTwoTopCommented = (arr) =>
   getTwoTopElOfArr(arr, (a, b) => b.comments.length - a.comments.length);
-const closeButtonClickHandler = (element) => () => {
+
+const closePopUp = (element) => {
   element.getElement().remove();
   element.removeElement();
 };
+const closeButtonClickHandler = (element) => () => {
+  closePopUp(element);
+};
+
+const escPressHandler = (element) => (event) => {
+  const isEscKey = event.key === `Escape` || event.key === `Esc`;
+  if (isEscKey) {
+    closePopUp(element);
+    document.removeEventListener(`keydown`, escPressHandler);
+  }
+};
+
 const filmCardClickHandler = (el) => {
   return () => {
     const newFilmDetail = new FilmDetails(el);
     render(footerBlock, newFilmDetail.getElement(), renderPosition.AFTEREND);
-    newFilmDetail.getElement()
+    document.addEventListener(`keydown`, escPressHandler(newFilmDetail));
+    newFilmDetail
+      .getElement()
       .querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, closeButtonClickHandler(newFilmDetail));
   };
@@ -44,14 +60,25 @@ const filmCardClickHandler = (el) => {
 const populateCards = (el, container) => {
   const newCard = new FilmsCard(el);
   render(container, newCard.getElement());
-  newCard.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, filmCardClickHandler(el));
-  newCard.getElement().querySelector(`.film-card__title`).addEventListener(`click`, filmCardClickHandler(el));
-  newCard.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, filmCardClickHandler(el));
+  newCard
+    .getElement()
+    .querySelector(`.film-card__poster`)
+    .addEventListener(`click`, filmCardClickHandler(el));
+  newCard
+    .getElement()
+    .querySelector(`.film-card__title`)
+    .addEventListener(`click`, filmCardClickHandler(el));
+  newCard
+    .getElement()
+    .querySelector(`.film-card__comments`)
+    .addEventListener(`click`, filmCardClickHandler(el));
 };
 const showMoreButtonClickHandler = () => {
   let previousShowCount = showFilmsCount;
   showFilmsCount = previousShowCount + NUMBER_OF_FILMS_ADD;
-  filmsData.slice(previousShowCount, showFilmsCount).forEach((el) => populateCards(el, filmsContainer));
+  filmsData
+    .slice(previousShowCount, showFilmsCount)
+    .forEach((el) => populateCards(el, filmsContainer));
 
   if (showFilmsCount >= NUMBER_OF_FILMS_MAIN) {
     showMoreButton.getElement().remove();
@@ -66,16 +93,18 @@ const films = new Films();
 
 render(mainBlock, films.getElement());
 
-
 const filmsListBlock = document.querySelector(`.films-list`);
 
-render(filmsListBlock, showMoreButton.getElement());
+if (filmsData.length === 0) {
+  render(filmsListBlock, new NoMovies().getElement());
+} else if (filmsData.length > showFilmsCount) {
+  render(filmsListBlock, showMoreButton.getElement());
+  showMoreButton.getElement().addEventListener(`click`, showMoreButtonClickHandler);
+}
 
 const filmsContainer = document.querySelector(`.films-list__container`);
 
 filmsData.slice(0, NUMBER_OF_FILMS_START).forEach((el) => populateCards(el, filmsContainer));
-
-showMoreButton.getElement().addEventListener(`click`, showMoreButtonClickHandler);
 
 const topRatedFilms = getTwoTopRates(filmsData);
 const topCommentedFilms = getTwoTopCommented(filmsData);
