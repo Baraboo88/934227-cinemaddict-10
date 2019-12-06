@@ -1,6 +1,6 @@
 import {getFilmDuration} from './../util';
 import {generateGenres} from './../util';
-import {createElement} from './../util';
+import AbstractComponent from "./abstract-component";
 
 const addFilmCard = (card) => {
   const {name, filmMark, releaseDate, runTime, genres, description, poster, comments} = card;
@@ -24,9 +24,9 @@ const addFilmCard = (card) => {
         </article>`;
 };
 
-export default class FilmCard {
+export default class FilmCard extends AbstractComponent {
   constructor(card) {
-    this._element = null;
+    super();
     this._card = card;
   }
 
@@ -34,14 +34,18 @@ export default class FilmCard {
     return addFilmCard(this._card);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
+  setCardPosterClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__poster`)
+      .addEventListener(`click`, handler);
   }
 
-  removeElement() {
-    this._element = null;
+  setCardTitleClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__title`)
+      .addEventListener(`click`, handler);
+  }
+
+  setCardCommentsClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__comments`)
+      .addEventListener(`click`, handler);
   }
 }

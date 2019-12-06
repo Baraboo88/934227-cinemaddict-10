@@ -1,4 +1,4 @@
-import {createElement} from "../util";
+import AbstractComponent from "./abstract-component";
 
 
 const addProfileBlock = (number) => {
@@ -20,9 +20,9 @@ const addProfileBlock = (number) => {
   </section>`;
 };
 
-export default class Profile {
+export default class Profile extends AbstractComponent {
   constructor(number) {
-    this._element = null;
+    super();
     this._number = number;
   }
 
@@ -30,14 +30,4 @@ export default class Profile {
     return addProfileBlock(this._number);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
-  }
 }

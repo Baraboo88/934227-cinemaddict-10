@@ -1,4 +1,5 @@
-import {capitalizeFirstLetter, createElement} from '../util';
+import {capitalizeFirstLetter} from '../util';
+import AbstractComponent from "./abstract-component";
 
 const addNavigationBlock = (filters) => {
   const renderFilters = () => {
@@ -13,24 +14,13 @@ const addNavigationBlock = (filters) => {
 };
 
 
-export default class Navigation {
+export default class Navigation extends AbstractComponent {
   constructor(filters) {
-    this._element = null;
+    super();
     this._filters = filters;
   }
 
   getTemplate() {
     return addNavigationBlock(this._filters);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

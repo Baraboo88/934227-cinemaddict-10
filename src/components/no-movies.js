@@ -1,6 +1,6 @@
 import {createElement} from '../util';
 
-const createNoMoviewTemplate = () =>
+const createNoMovieTemplate = () =>
   `<h2 class="films-list__title">There are no movies in our database</h2>`;
 
 export default class NoMovies {
@@ -9,7 +9,7 @@ export default class NoMovies {
   }
 
   getTemplate() {
-    return createNoMoviewTemplate();
+    return createNoMovieTemplate();
   }
 
   getElement() {
