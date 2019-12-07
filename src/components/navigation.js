@@ -1,4 +1,4 @@
-import {capitalizeFirstLetter} from '../util';
+import {capitalizeFirstLetter} from '../utils/util';
 import AbstractComponent from "./abstract-component";
 
 const addNavigationBlock = (filters) => {

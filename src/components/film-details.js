@@ -1,5 +1,5 @@
-import {monthNames} from './../util';
-import {generateGenres} from './../util';
+import {monthNames} from '../utils/util';
+import {generateGenres} from '../utils/util';
 import AbstractComponent from './abstract-component';
 
 const addFilmDetails = (data) => {

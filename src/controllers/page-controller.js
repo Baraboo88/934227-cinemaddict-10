@@ -1,5 +1,6 @@
 import ShowMoreButton from "../components/show-more-button";
-import {remove, render, renderPosition} from "../util";
+import {renderPosition} from "../utils/util";
+import {render, remove} from "../utils/render";
 import FilmDetails from "../components/film-details";
 import FilmsCard from "../components/film-card";
 import NoMovies from "../components/no-movies";

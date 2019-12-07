@@ -4,7 +4,7 @@ import Sort from './components/sort';
 import FooterStat from './components/footer-stat';
 import {getFilmsTemplate} from './mock/films-data';
 import {generateFilters} from './mock/filters';
-import {render} from './util';
+import {render} from './utils/render';
 import PageController from "./controllers/page-controller";
 
 

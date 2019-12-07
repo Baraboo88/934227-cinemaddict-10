@@ -1,6 +1,6 @@
-import {getRandomNumber, getRandomArrayElement} from './../util';
+import {getRandomNumber, getRandomArrayElement} from '../utils/util';
 import {getComments} from './comments';
-import {shuffleArray} from "./../util";
+import {shuffleArray} from "../utils/util";
 
 const countries = [`USA`, `Russia`, `France`];
 const actors = [

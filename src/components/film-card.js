@@ -1,5 +1,5 @@
-import {getFilmDuration} from './../util';
-import {generateGenres} from './../util';
+import {getFilmDuration} from '../utils/util';
+import {generateGenres} from '../utils/util';
 import AbstractComponent from "./abstract-component";
 
 const addFilmCard = (card) => {
