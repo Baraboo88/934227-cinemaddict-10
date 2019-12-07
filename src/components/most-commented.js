@@ -1,4 +1,4 @@
-import {createElement} from "../util";
+import AbstractComponent from "./abstract-component";
 
 const addMostComBlock = () => {
   return `<section class="films-list--extra">
@@ -8,23 +8,8 @@ const addMostComBlock = () => {
 };
 
 
-export default class MostCommented {
-  constructor() {
-    this._element = null;
-  }
-
+export default class MostCommented extends AbstractComponent {
   getTemplate() {
     return addMostComBlock();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

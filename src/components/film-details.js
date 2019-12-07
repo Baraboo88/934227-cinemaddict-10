@@ -1,5 +1,6 @@
-import {createElement, monthNames} from './../util';
-import {generateGenres} from './../util';
+import {monthNames} from '../utils/util';
+import {generateGenres} from '../utils/util';
+import AbstractComponent from './abstract-component';
 
 const addFilmDetails = (data) => {
   const {
@@ -173,9 +174,9 @@ const addFilmDetails = (data) => {
 </section>`;
 };
 
-export default class FilmDetails {
+export default class FilmDetails extends AbstractComponent {
   constructor(data) {
-    this._element = null;
+    super();
     this._data = data;
   }
 
@@ -183,14 +184,9 @@ export default class FilmDetails {
     return addFilmDetails(this._data);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setCloseButtonClickHandler(handler) {
+    this.getElement()
+      .querySelector(`.film-details__close-btn`)
+      .addEventListener(`click`, handler);
   }
 }

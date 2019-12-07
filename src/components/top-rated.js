@@ -1,4 +1,4 @@
-import {createElement} from "../util";
+import AbstractComponent from "./abstract-component";
 
 const addTopRatesBlock = () => {
   return `<section class="films-list--extra">
@@ -8,23 +8,8 @@ const addTopRatesBlock = () => {
     </section>`;
 };
 
-export default class TopRated {
-  constructor() {
-    this._element = null;
-  }
-
+export default class TopRated extends AbstractComponent {
   getTemplate() {
     return addTopRatesBlock();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

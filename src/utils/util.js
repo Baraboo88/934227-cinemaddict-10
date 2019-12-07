@@ -59,14 +59,3 @@ export const createElement = (element) => {
 
   return wrapElem.firstChild;
 };
-
-export const render = (container, element, place = renderPosition.BEFOREEND) => {
-  switch (place) {
-    case renderPosition.BEFOREEND:
-      container.append(element);
-      break;
-    case renderPosition.AFTEREND:
-      container.insertAdjacentElement(renderPosition.AFTEREND, element);
-      break;
-  }
-};

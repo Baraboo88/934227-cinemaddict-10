@@ -1,4 +1,4 @@
-import {getRandomNumber, getRandomArrayElement} from './../util';
+import {getRandomNumber, getRandomArrayElement} from '../utils/util';
 
 const comments = [
   `Interesting setting and a good cast`,
