@@ -7,6 +7,7 @@ import NoMovies from "../components/no-movies";
 import TopRated from "../components/top-rated";
 import MostCommented from "../components/most-commented";
 import Films from "../components/films";
+import Sort, {sortTypes} from "../components/sort";
 
 
 const NUMBER_OF_FILMS_START = 5;
@@ -17,6 +18,7 @@ export default class PageController {
     this._elementToJoin = elementToJoin;
     this._showMoreButton = new ShowMoreButton();
     this._films = new Films();
+    this._sort = new Sort();
   }
 
   render(filmsData) {
@@ -69,21 +71,43 @@ export default class PageController {
         remove(this._showMoreButton);
       }
     };
-
+    render(this._elementToJoin, this._sort.getElement());
     render(this._elementToJoin, this._films.getElement());
-
     const filmsListBlock = document.querySelector(`.films-list`);
-
-    if (filmsData.length === 0) {
-      render(filmsListBlock, new NoMovies().getElement());
-    } else if (filmsData.length > showFilmsCount) {
-      render(filmsListBlock, this._showMoreButton.getElement());
-      this._showMoreButton.setShowMoreButtonClickHandler(showMoreButtonClickHandler);
-    }
-
     const filmsContainer = document.querySelector(`.films-list__container`);
+    const renderFilms = (filmsToRender) => {
+      showFilmsCount = NUMBER_OF_FILMS_ADD;
+      while (filmsContainer.firstChild) {
+        filmsContainer.removeChild(filmsContainer.firstChild);
+      }
+      if (filmsToRender.length === 0) {
+        render(filmsListBlock, new NoMovies().getElement());
+      } else if (filmsData.length > showFilmsCount) {
+        render(filmsListBlock, this._showMoreButton.getElement());
+        this._showMoreButton.setShowMoreButtonClickHandler(showMoreButtonClickHandler);
+      }
 
-    filmsData.slice(0, NUMBER_OF_FILMS_START).forEach((el) => populateCards(el, filmsContainer));
+      filmsToRender.slice(0, NUMBER_OF_FILMS_START).forEach((el) => populateCards(el, filmsContainer));
+    };
+
+    const sortClickHandler = (sortType) => {
+      let sortedFilms = [...filmsData];
+      switch (sortType) {
+        case sortTypes.DEFAULT:
+          renderFilms(filmsData);
+          break;
+        case sortTypes.BY_DATE:
+          renderFilms(sortedFilms.sort((a, b) => b.releaseDate - a.releaseDate));
+          break;
+        case sortTypes.BY_RATING:
+          renderFilms(sortedFilms.sort((a, b) => b.filmMark - a.filmMark));
+          break;
+      }
+    };
+
+    this._sort.setFilterClickHandler(sortClickHandler);
+
+    renderFilms(filmsData);
 
     const topRatedFilms = getTwoTopRates(filmsData);
     const topCommentedFilms = getTwoTopCommented(filmsData);
