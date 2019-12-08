@@ -1,6 +1,5 @@
 import Profile from './components/profile';
 import Navigation from './components/navigation';
-import Sort from './components/sort';
 import FooterStat from './components/footer-stat';
 import {getFilmsTemplate} from './mock/films-data';
 import {generateFilters} from './mock/filters';
@@ -19,7 +18,6 @@ const pageController = new PageController(mainBlock);
 
 render(headerBlock, new Profile(filmsData.filter((el) => el.isInWatchList).length).getElement());
 render(mainBlock, new Navigation(filters).getElement());
-render(mainBlock, new Sort().getElement());
 
 pageController.render(filmsData);
 
