@@ -10,6 +10,7 @@ export default class AbstractSmartController extends AbstractComponent {
     const prevElement = this.getElement();
     this.removeElement();
     const newElement = this.getElement();
+    newElement.classList.add(`notransition`);
     prevElement.parentElement.replaceChild(newElement, prevElement);
     this.recoveryListeners();
   }

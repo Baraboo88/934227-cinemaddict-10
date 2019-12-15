@@ -1,11 +1,13 @@
 import ShowMoreButton from "../components/show-more-button";
-import {render, remove} from "../utils/render";
+import {render, remove, replace} from "../utils/render";
+import {generateFilters} from "../mock/filters";
 import NoMovies from "../components/no-movies";
 import TopRated from "../components/top-rated";
 import MostCommented from "../components/most-commented";
 import Films from "../components/films";
 import Sort, {sortTypes} from "../components/sort";
 import MovieController from "./movie-controller";
+import Navigation from './../components/navigation';
 
 
 const NUMBER_OF_FILMS_START = 5;
@@ -20,17 +22,23 @@ const renderMovies = (container, movies, onDataChange, onViewChange) => {
 };
 
 export default class PageController {
-  constructor(elementToJoin) {
-    this._elementToJoin = elementToJoin;
+  constructor(container) {
+    this._container = container;
     this._showMoreButton = new ShowMoreButton();
     this._films = new Films();
     this._sort = new Sort();
     this._moviesControllers = [];
     this._moviesDataArray = null;
+    this._navigation = null;
     this._onDataChange = (movieController, oldMovieData, newMovieData) => (evt) =>{
-      evt.preventDefault();
+      if (evt) {
+        evt.preventDefault();
+      }
       const oldMovieIndex = this._moviesDataArray.findIndex((el) => el === oldMovieData);
       this._moviesDataArray[oldMovieIndex] = newMovieData;
+      const newNavigation = new Navigation(generateFilters(this._moviesDataArray));
+      replace(newNavigation.getElement(), this._navigation.getElement());
+      this._navigation = newNavigation;
       movieController.render(newMovieData);
     };
     this._onViewChange = () => {
@@ -42,6 +50,7 @@ export default class PageController {
 
   render(filmsData) {
     this._moviesDataArray = filmsData;
+    this._navigation = new Navigation(generateFilters(this._moviesDataArray));
     let showFilmsCount = NUMBER_OF_FILMS_ADD;
     const getTwoTopElOfArr = (arr, comparator) => arr.sort(comparator).slice(0, 2);
     const getTwoTopRates = (arr) => getTwoTopElOfArr(arr, (a, b) => b.filmMark - a.filmMark);
@@ -56,8 +65,9 @@ export default class PageController {
         remove(this._showMoreButton);
       }
     };
-    render(this._elementToJoin, this._sort.getElement());
-    render(this._elementToJoin, this._films.getElement());
+    render(this._container, this._navigation.getElement());
+    render(this._container, this._sort.getElement());
+    render(this._container, this._films.getElement());
     const filmsListBlock = document.querySelector(`.films-list`);
     const filmsContainer = document.querySelector(`.films-list__container`);
     const renderFilms = (filmsToRender) => {

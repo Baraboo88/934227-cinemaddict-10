@@ -1,4 +1,4 @@
-import {getRandomNumber, getRandomArrayElement} from '../utils/util';
+import {getRandomNumber, getRandomArrayElement, usersNames} from '../utils/util';
 
 const comments = [
   `Interesting setting and a good cast`,
@@ -6,8 +6,6 @@ const comments = [
   `Very very old. Meh`,
   `Almost two hours? Seriously?`
 ];
-
-const usersNames = [`Tim Macoveev`, `John Doe`, `Janna d'Arc`];
 
 const emoji = [`puke.png`, `sleeping.png`, `angry.png`, `smile.png`, `trophy.png`];
 

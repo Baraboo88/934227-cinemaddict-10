@@ -2,6 +2,35 @@ import {monthNames} from '../utils/util';
 import {generateGenres} from '../utils/util';
 import AbstractSmartController from "./abstract-smart-component";
 
+export const renderComments = (comments) => {
+  return comments
+    .map((el) => {
+      return `<li class="film-details__comment">
+          <span class="film-details__comment-emoji">
+            <img src="./images/emoji/${el.emoji}" width="55" height="55" alt="emoji">
+          </span>
+          <div>
+            <p class="film-details__comment-text">${el.comment}</p>
+            <p class="film-details__comment-info">
+              <span class="film-details__comment-author">${el.user}</span>
+              <span class="film-details__comment-day">${getDateFormatted(el.date)}</span>
+              <button class="film-details__comment-delete">Delete</button>
+            </p>
+          </div>
+        </li>`;
+    })
+    .join(`\n`);
+};
+
+
+const getDateFormatted = (elDate) => {
+  const dateDiff = new Date(new Date() - elDate).getDate();
+
+  return dateDiff > 0 ? getDays(dateDiff) : `Today`;
+};
+
+const getDays = (days) => (days > 1 ? `${days} days` : `${days} day`);
+
 const addFilmDetails = (data, flag, emojiIMG) => {
 
   const {
@@ -19,37 +48,11 @@ const addFilmDetails = (data, flag, emojiIMG) => {
     comments
   } = data;
 
-  const getDays = (days) => (days > 1 ? `${days} days` : `${days} day`);
+  const renderEmoji = () => emojiIMG ? `<img src="./images/emoji/${emojiIMG}.png" width="55" height="55" alt="emoji" class="film-details__add-emoji-img">` : ``;
 
-  const getDateFormatted = (elDate) => {
-    const dateDiff = new Date(new Date() - elDate).getDate();
-
-    return dateDiff > 0 ? getDays(dateDiff) : `Today`;
+  const getGenresName = (ganresSet) => {
+    return [...ganresSet].length > 1 ? `Genres` : `Genre`;
   };
-
-  const renderEmoji = () => emojiIMG ? `<img src="./images/emoji/${emojiIMG}.png" width="55" height="55" alt="emoji">` : ``;
-
-
-  const renderComments = () => {
-    return comments
-      .map((el) => {
-        return `<li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="./images/emoji/${el.emoji}" width="55" height="55" alt="emoji">
-            </span>
-            <div>
-              <p class="film-details__comment-text">${el.comment}</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${el.user}</span>
-                <span class="film-details__comment-day">${getDateFormatted(el.date)}</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>`;
-      })
-      .join(`\n`);
-  };
-
 
   const renderMarks = () => {
     if (flag) {
@@ -166,7 +169,7 @@ const addFilmDetails = (data, flag, emojiIMG) => {
               <td class="film-details__cell">${country}</td>
             </tr>
             <tr class="film-details__row">
-              <td class="film-details__term">Genres</td>
+              <td class="film-details__term">${getGenresName(genres)}</td>
               <td class="film-details__cell">
                 ${generateGenres(genres)}
                 </td>
@@ -199,12 +202,12 @@ const addFilmDetails = (data, flag, emojiIMG) => {
 
         <ul class="film-details__comments-list">
 
-        ${renderComments()}
+        ${renderComments(comments)}
         </ul>
 
         <div class="film-details__new-comment">
           <div for="add-emoji" class="film-details__add-emoji-label">
-         ${renderEmoji()}
+        ${renderEmoji()}
         </div>
 
           <label class="film-details__comment-label">
@@ -250,8 +253,20 @@ export default class FilmDetails extends AbstractSmartController {
 
   }
 
+  getIsWached() {
+    return this._data.isInHistory;
+  }
+
+  addComment(comment) {
+    this._data.comments.push(comment);
+  }
+
+  getData() {
+    return this._data;
+  }
+
   getTemplate() {
-    return addFilmDetails(this._data, this._isWhached, this._emoji);
+    return addFilmDetails(this._data, this._data.isInHistory, this._emoji);
   }
 
   setCloseButtonClickHandler(handler) {
@@ -269,7 +284,7 @@ export default class FilmDetails extends AbstractSmartController {
   _subscribeOnEvents() {
 
     const alreadyWatchedClickHandler = () => {
-      this._isWhached = !this._isWhached;
+      this._data.isInHistory = !this._data.isInHistory;
       this.rerender();
       if (this.getElement().querySelector(`.film-details__watched-reset`)) {
         this.getElement().querySelector(`.film-details__watched-reset`).addEventListener(`click`, removeMarksElementHandler);
@@ -277,7 +292,7 @@ export default class FilmDetails extends AbstractSmartController {
     };
 
     const removeMarksElementHandler = () => {
-      this._isWhached = false;
+      this._data.isInHistory = false;
       this.rerender();
     };
 

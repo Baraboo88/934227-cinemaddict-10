@@ -59,3 +59,5 @@ export const createElement = (element) => {
 
   return wrapElem.firstChild;
 };
+
+export const usersNames = [`Tim Macoveev`, `John Doe`, `Janna d'Arc`];
