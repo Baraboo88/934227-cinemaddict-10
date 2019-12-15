@@ -10,8 +10,8 @@ export default class AbstractSmartController extends AbstractComponent {
     const prevElement = this.getElement();
     this.removeElement();
     const newElement = this.getElement();
-    newElement.classList.add(`notransition`);
-    prevElement.parentElement.replaceChild(newElement, prevElement);
+    prevElement.querySelector(`.film-details__inner`).parentElement.replaceChild(newElement.querySelector(`.film-details__inner`), prevElement.querySelector(`.film-details__inner`));
+    this.setElement(prevElement);
     this.recoveryListeners();
   }
 }

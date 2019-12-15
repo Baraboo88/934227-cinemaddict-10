@@ -19,7 +19,7 @@ export default class MovieController {
     this._onViewChange = onViewChange;
     this._mode = mode.DEFAULT;
     this._newFilmDetail = null;
-    this._buffer = [];
+    this._movie = null;
   }
 
   setDefaultView() {
@@ -30,6 +30,7 @@ export default class MovieController {
   }
 
   render(movie) {
+    this._movie = movie;
     const prevCard = this._newCard;
 
     this._newCard = new FilmsCard(movie);
@@ -40,7 +41,6 @@ export default class MovieController {
 
     const closeButtonClickHandler = (element) => () => {
       closePopUp(element);
-      this._onDataChange(this, movie, Object.assign({}, movie, {isInHistory: this._newFilmDetail.getData().isInHistory, comments: this._newFilmDetail.getData().comments}))();
     };
 
     const escPressHandler = (event) => {
@@ -49,7 +49,6 @@ export default class MovieController {
       if (isEscKey) {
 
         closePopUp(this._newFilmDetail);
-        this._onDataChange(this, movie, Object.assign({}, movie, {isInHistory: this._newFilmDetail.getData().isInHistory, comments: this._newFilmDetail.getData().comments}))();
         document.removeEventListener(`keydown`, escPressHandler);
         document.removeEventListener(`keydown`, commentAddingPressHandler);
       }
@@ -58,8 +57,8 @@ export default class MovieController {
 
     const commentAddingPressHandler = (event) => {
       const key = event.key;
-      const lastInBuffer = this._buffer[this._buffer.length - 1];
-      if ((lastInBuffer === `Control` || `Command`) && key === `Enter`) {
+
+      if ((event.ctrlKey || event.metaKey) && key === `Enter`) {
         const input = this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).value;
         const imageAddress = this._newFilmDetail.getElement().querySelector(`.film-details__add-emoji-img`).src.split(`/`);
         const image = imageAddress[imageAddress.length - 1];
@@ -71,18 +70,26 @@ export default class MovieController {
             emoji: image
           };
           this._newFilmDetail.addComment(commentObj);
+
+          this._onDataChange(this, this._movie, Object.assign({}, this._movie, {comments: this._newFilmDetail.getComments()}))();
+
           this._newFilmDetail.rerender();
         }
-        this._buffer = [];
-      }
 
-      this._buffer.push(key);
+      }
+    };
+
+    const alreadyWatchedClickHandler = () => {
+      this._newFilmDetail._isInHistory = !this._newFilmDetail._isInHistory;
+      this._onDataChange(this, this._movie, Object.assign({}, this._movie, {isInHistory: this._newFilmDetail.getIsWached()}))();
+      this._newFilmDetail.rerender();
     };
 
     const filmCardClickHandler = (el) => {
       return () => {
         this._onViewChange();
         this._newFilmDetail = new FilmDetails(el);
+        this._newFilmDetail.setAlreadyWatchedClickHandler(alreadyWatchedClickHandler);
         render(this._footerBlock, this._newFilmDetail.getElement(), renderPosition.AFTEREND);
         this._mode = mode.POPUP;
         document.addEventListener(`keydown`, escPressHandler);
@@ -91,8 +98,6 @@ export default class MovieController {
         this._newFilmDetail.setCloseButtonClickHandler(closeButtonClickHandler(this._newFilmDetail));
       };
     };
-
-
     this._newCard.setCardPosterClickHandler(filmCardClickHandler(movie));
     this._newCard.setCardTitleClickHandler(filmCardClickHandler(movie));
     this._newCard.setCardCommentsClickHandler(filmCardClickHandler(movie));

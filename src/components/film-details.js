@@ -31,7 +31,7 @@ const getDateFormatted = (elDate) => {
 
 const getDays = (days) => (days > 1 ? `${days} days` : `${days} day`);
 
-const addFilmDetails = (data, flag, emojiIMG) => {
+const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
 
   const {
     name,
@@ -44,9 +44,9 @@ const addFilmDetails = (data, flag, emojiIMG) => {
     country,
     genres,
     description,
-    poster,
-    comments
+    poster
   } = data;
+  const comments = commentsArr;
 
   const renderEmoji = () => emojiIMG ? `<img src="./images/emoji/${emojiIMG}.png" width="55" height="55" alt="emoji" class="film-details__add-emoji-img">` : ``;
 
@@ -246,27 +246,28 @@ export default class FilmDetails extends AbstractSmartController {
   constructor(data) {
     super();
     this._data = data;
-    this._isWhached = data.isInHistory;
     this.closeHandler = null;
+    this._alreadyWatchedHandler = null;
     this._emoji = null;
+    this._isInHistory = data.isInHistory;
+    this._comments = Array.from(this._data.comments);
     this._subscribeOnEvents();
-
   }
 
   getIsWached() {
-    return this._data.isInHistory;
+    return this._isInHistory;
   }
 
   addComment(comment) {
-    this._data.comments.push(comment);
+    this._comments.push(comment);
   }
 
-  getData() {
-    return this._data;
+  getComments() {
+    return this._comments;
   }
 
   getTemplate() {
-    return addFilmDetails(this._data, this._data.isInHistory, this._emoji);
+    return addFilmDetails(this._data, this._isInHistory, this._emoji, this._comments);
   }
 
   setCloseButtonClickHandler(handler) {
@@ -279,22 +280,16 @@ export default class FilmDetails extends AbstractSmartController {
   recoveryListeners() {
     this._subscribeOnEvents();
     this.setCloseButtonClickHandler(this.closeHandler);
+    this.setAlreadyWatchedClickHandler(this._alreadyWatchedHandler);
+  }
+
+  setAlreadyWatchedClickHandler(handler) {
+    this._alreadyWatchedHandler = handler;
+    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, handler);
+
   }
 
   _subscribeOnEvents() {
-
-    const alreadyWatchedClickHandler = () => {
-      this._data.isInHistory = !this._data.isInHistory;
-      this.rerender();
-      if (this.getElement().querySelector(`.film-details__watched-reset`)) {
-        this.getElement().querySelector(`.film-details__watched-reset`).addEventListener(`click`, removeMarksElementHandler);
-      }
-    };
-
-    const removeMarksElementHandler = () => {
-      this._data.isInHistory = false;
-      this.rerender();
-    };
 
     const emojiClickHandler = (evt) => {
       this._emoji = evt.target.value;
@@ -302,7 +297,5 @@ export default class FilmDetails extends AbstractSmartController {
     };
 
     this.getElement().querySelector(`.film-details__emoji-list`).addEventListener(`change`, emojiClickHandler);
-    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, alreadyWatchedClickHandler);
-
   }
 }
