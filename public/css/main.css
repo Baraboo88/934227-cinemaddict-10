@@ -16,6 +16,9 @@
   --font-size-bigger: 20px;
 }
 
+.notransition {
+  animation: none !important;
+}
 
 html {
   background: #121213 url('../images/background.png') no-repeat 60% 0;
