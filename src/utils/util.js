@@ -1,3 +1,4 @@
+
 export const monthNames = [
   `January`,
   `February`,
@@ -12,6 +13,7 @@ export const monthNames = [
   `November`,
   `December`
 ];
+
 
 export const renderPosition = {
   AFTEREND: `afterend`,

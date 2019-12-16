@@ -1,6 +1,8 @@
-import {monthNames} from '../utils/util';
 import {generateGenres} from '../utils/util';
 import AbstractSmartController from "./abstract-smart-component";
+import moment from 'moment';
+
+const getCommentedDatea = (date) => moment(date).format(`YYYY/MM/DD HH:MM`);
 
 export const renderComments = (comments) => {
   return comments
@@ -13,7 +15,7 @@ export const renderComments = (comments) => {
             <p class="film-details__comment-text">${el.comment}</p>
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${el.user}</span>
-              <span class="film-details__comment-day">${getDateFormatted(el.date)}</span>
+              <span class="film-details__comment-day">${getCommentedDatea(el.date)}</span>
               <button class="film-details__comment-delete">Delete</button>
             </p>
           </div>
@@ -22,14 +24,6 @@ export const renderComments = (comments) => {
     .join(`\n`);
 };
 
-
-const getDateFormatted = (elDate) => {
-  const dateDiff = new Date(new Date() - elDate).getDate();
-
-  return dateDiff > 0 ? getDays(dateDiff) : `Today`;
-};
-
-const getDays = (days) => (days > 1 ? `${days} days` : `${days} day`);
 
 const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
 
@@ -110,10 +104,7 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
     }
   };
 
-  const getReleaseDate = () =>
-    `${releaseDate.getDate() < 10 ? `0` + releaseDate.getDate() : releaseDate.getDate()} ${
-      monthNames[releaseDate.getMonth()]
-    } ${releaseDate.getFullYear()}`;
+  const getReleaseDate = () => moment(releaseDate).format(`DD MMMM YYYY`);
 
   const getRuntime = () =>
     `${Math.floor(runTime / 60)}h ${runTime % 60 < 10 ? `0` + (runTime % 60) : runTime % 60}m`;
