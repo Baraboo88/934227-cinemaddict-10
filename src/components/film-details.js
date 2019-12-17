@@ -1,8 +1,8 @@
 import {generateGenres} from '../utils/util';
-import AbstractSmartController from "./abstract-smart-component";
+import AbstractSmartComponent from "./abstract-smart-component";
 import moment from 'moment';
 
-const getCommentedDatea = (date) => moment(date).format(`YYYY/MM/DD HH:MM`);
+const getCommentedDate = (date) => moment(date).format(`YYYY/MM/DD HH:MM`);
 
 export const renderComments = (comments) => {
   return comments
@@ -15,7 +15,7 @@ export const renderComments = (comments) => {
             <p class="film-details__comment-text">${el.comment}</p>
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${el.user}</span>
-              <span class="film-details__comment-day">${getCommentedDatea(el.date)}</span>
+              <span class="film-details__comment-day">${getCommentedDate(el.date)}</span>
               <button class="film-details__comment-delete">Delete</button>
             </p>
           </div>
@@ -105,9 +105,8 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
   };
 
   const getReleaseDate = () => moment(releaseDate).format(`DD MMMM YYYY`);
-
-  const getRuntime = () =>
-    `${Math.floor(runTime / 60)}h ${runTime % 60 < 10 ? `0` + (runTime % 60) : runTime % 60}m`;
+  const momentDuration = moment.duration(runTime);
+  const getRuntime = () => `${momentDuration.hours()}h ${momentDuration.minutes()}m`;
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -233,7 +232,7 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
 </section>`;
 };
 
-export default class FilmDetails extends AbstractSmartController {
+export default class FilmDetails extends AbstractSmartComponent {
   constructor(data) {
     super();
     this._data = data;
@@ -250,7 +249,7 @@ export default class FilmDetails extends AbstractSmartController {
   }
 
   addComment(comment) {
-    this._comments.push(comment);
+    this._comments = [...this._comments, comment];
   }
 
   getComments() {

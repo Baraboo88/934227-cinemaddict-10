@@ -1,6 +1,6 @@
 import AbstractComponent from "./abstract-component";
 
-export default class AbstractSmartController extends AbstractComponent {
+export default class AbstractSmartComponent extends AbstractComponent {
 
   recoveryListeners() {
     throw new Error(`method should be overwritten: _recoveryListeners`);

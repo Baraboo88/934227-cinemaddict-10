@@ -62,7 +62,9 @@ const getFilmTemplate = () => {
   const releaseDate = new Date(new Date().setDate(new Date().getDate() - Math.floor(Math.random() * 10000))
   );
 
-  const runTime = getRandomNumber(120, 60);
+  const minsToMilliseconds = (minutes) => minutes * 60 * 1000;
+
+  const runTime = getRandomNumber(minsToMilliseconds(120), minsToMilliseconds(60));
 
   return {
     name: getRandomArrayElement(films),
