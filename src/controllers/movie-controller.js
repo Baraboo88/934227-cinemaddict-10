@@ -41,6 +41,7 @@ export default class MovieController {
 
     const closeButtonClickHandler = (element) => () => {
       closePopUp(element);
+      document.removeEventListener(`keydown`, commentAddingPressHandler);
     };
 
     const escPressHandler = (event) => {

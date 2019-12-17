@@ -1,6 +1,8 @@
-import {monthNames} from '../utils/util';
-import {generateGenres} from '../utils/util';
-import AbstractSmartController from "./abstract-smart-component";
+import {generateGenres, getFilmDuration} from '../utils/util';
+import AbstractSmartComponent from "./abstract-smart-component";
+import moment from 'moment';
+
+const getCommentedDate = (date) => moment(date).format(`YYYY/MM/DD HH:MM`);
 
 export const renderComments = (comments) => {
   return comments
@@ -13,7 +15,7 @@ export const renderComments = (comments) => {
             <p class="film-details__comment-text">${el.comment}</p>
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${el.user}</span>
-              <span class="film-details__comment-day">${getDateFormatted(el.date)}</span>
+              <span class="film-details__comment-day">${getCommentedDate(el.date)}</span>
               <button class="film-details__comment-delete">Delete</button>
             </p>
           </div>
@@ -22,14 +24,6 @@ export const renderComments = (comments) => {
     .join(`\n`);
 };
 
-
-const getDateFormatted = (elDate) => {
-  const dateDiff = new Date(new Date() - elDate).getDate();
-
-  return dateDiff > 0 ? getDays(dateDiff) : `Today`;
-};
-
-const getDays = (days) => (days > 1 ? `${days} days` : `${days} day`);
 
 const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
 
@@ -110,13 +104,7 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
     }
   };
 
-  const getReleaseDate = () =>
-    `${releaseDate.getDate() < 10 ? `0` + releaseDate.getDate() : releaseDate.getDate()} ${
-      monthNames[releaseDate.getMonth()]
-    } ${releaseDate.getFullYear()}`;
-
-  const getRuntime = () =>
-    `${Math.floor(runTime / 60)}h ${runTime % 60 < 10 ? `0` + (runTime % 60) : runTime % 60}m`;
+  const getReleaseDate = () => moment(releaseDate).format(`DD MMMM YYYY`);
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -162,7 +150,7 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${getRuntime()}</td>
+              <td class="film-details__cell">${getFilmDuration(runTime)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
@@ -242,7 +230,7 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
 </section>`;
 };
 
-export default class FilmDetails extends AbstractSmartController {
+export default class FilmDetails extends AbstractSmartComponent {
   constructor(data) {
     super();
     this._data = data;
@@ -259,7 +247,7 @@ export default class FilmDetails extends AbstractSmartController {
   }
 
   addComment(comment) {
-    this._comments.push(comment);
+    this._comments = [...this._comments, comment];
   }
 
   getComments() {
