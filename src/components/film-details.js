@@ -1,4 +1,4 @@
-import {generateGenres} from '../utils/util';
+import {generateGenres, getFilmDuration} from '../utils/util';
 import AbstractSmartComponent from "./abstract-smart-component";
 import moment from 'moment';
 
@@ -105,8 +105,6 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
   };
 
   const getReleaseDate = () => moment(releaseDate).format(`DD MMMM YYYY`);
-  const momentDuration = moment.duration(runTime);
-  const getRuntime = () => `${momentDuration.hours()}h ${momentDuration.minutes()}m`;
 
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -152,7 +150,7 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${getRuntime()}</td>
+              <td class="film-details__cell">${getFilmDuration(runTime)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>

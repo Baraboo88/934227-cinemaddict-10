@@ -1,4 +1,6 @@
 
+import moment from 'moment';
+
 export const monthNames = [
   `January`,
   `February`,
@@ -20,8 +22,10 @@ export const renderPosition = {
   BEFOREEND: `beforeend`
 };
 
-export const getFilmDuration = (runTime) =>
-  `${Math.floor(runTime / 60)}h ${runTime % 60 < 10 ? `0` + (runTime % 60) : runTime % 60}`;
+export const getFilmDuration = (runTime) => {
+  const momentDuration = moment.duration(runTime);
+  return `${momentDuration.hours()}h ${momentDuration.minutes()}m`;
+};
 
 export const generateGenres = (genres) => {
   return [...genres]
