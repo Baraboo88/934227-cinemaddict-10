@@ -42,10 +42,10 @@ export default class PageController {
         const index = oldMovieComment.findIndex((el) => el.id === (oldMovieData * 1));
         oldMovieComment.splice(index, 1);
         oldMovie.comments = oldMovieComment;
-        this._movies.updateMovie(oldMovie);
+        this._movies.updateMovie(oldMovie.id, oldMovie);
         movieController.render(oldMovie);
       } else {
-        this._movies.updateMovie(newMovieData);
+        this._movies.updateMovie(newMovieData.id, newMovieData);
         this._navigation.rerender();
         movieController.render(newMovieData);
       }

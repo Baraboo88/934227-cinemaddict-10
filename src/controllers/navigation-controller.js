@@ -1,4 +1,3 @@
-import {filterTypes} from '../utils/util';
 import Navigation from '../components/navigation';
 import {replace, render} from '../utils/render';
 import {generateFilters} from '../mock/filters';
@@ -7,8 +6,6 @@ export default class NavigationController {
   constructor(container, model) {
     this._container = container;
     this._model = model;
-    this._filter = null;
-    this._activeFilterType = filterTypes.ALL;
     this._navigation = null;
     this._onDataChange = () => {
       this.rerender();

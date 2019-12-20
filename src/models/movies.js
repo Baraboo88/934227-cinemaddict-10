@@ -37,9 +37,9 @@ export default class Movies {
     }
   }
 
-  updateMovie(movie) {
+  updateMovie(id, movie) {
     const tempArr = [...this._movies];
-    const movieToChange = tempArr.find((el) => el.id === movie.id);
+    const movieToChange = tempArr.find((el) => el.id === id);
     const index = tempArr.indexOf(movieToChange);
     tempArr[index] = movie;
     this._movies = tempArr;
