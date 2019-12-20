@@ -20,4 +20,4 @@ const getComment = () => {
   };
 };
 
-export const getComments = () => [...Array(getRandomNumber(30))].map(getComment);
+export const getComments = () => [...Array(getRandomNumber(30))].map((el, i) => ({...getComment(), id: i}));

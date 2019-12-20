@@ -85,6 +85,6 @@ const getFilmTemplate = () => {
   };
 };
 
-const getFilmsTemplate = (count) => [...Array(count)].map(getFilmTemplate);
+const getFilmsTemplate = (count) => [...Array(count)].map((el, i) => ({...getFilmTemplate(), id: i}));
 
 export {getFilmsTemplate};
