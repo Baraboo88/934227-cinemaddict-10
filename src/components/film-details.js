@@ -16,7 +16,7 @@ export const renderComments = (comments) => {
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${el.user}</span>
               <span class="film-details__comment-day">${getCommentedDate(el.date)}</span>
-              <button class="film-details__comment-delete">Delete</button>
+              <button class="film-details__comment-delete" data-id = ${el.id}>Delete</button>
             </p>
           </div>
         </li>`;
@@ -236,6 +236,7 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._data = data;
     this.closeHandler = null;
     this._alreadyWatchedHandler = null;
+    this._deleteClickHandler = null;
     this._emoji = null;
     this._isInHistory = data.isInHistory;
     this._comments = Array.from(this._data.comments);
@@ -269,12 +270,19 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._subscribeOnEvents();
     this.setCloseButtonClickHandler(this.closeHandler);
     this.setAlreadyWatchedClickHandler(this._alreadyWatchedHandler);
+    this.setDeleteClickHandler(this._deleteClickHandler);
   }
 
   setAlreadyWatchedClickHandler(handler) {
     this._alreadyWatchedHandler = handler;
     this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, handler);
 
+  }
+
+  setDeleteClickHandler(handler) {
+    this._deleteClickHandler = handler;
+    const deleteButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    deleteButtons.forEach((el) => el.addEventListener(`click`, handler));
   }
 
   _subscribeOnEvents() {

@@ -29,6 +29,10 @@ export default class MovieController {
     }
   }
 
+  getMovieData() {
+    return this._movie;
+  }
+
   render(movie) {
     this._movie = movie;
     const prevCard = this._newCard;
@@ -86,11 +90,19 @@ export default class MovieController {
       this._newFilmDetail.rerender();
     };
 
+    const deleteClickHandler = (evt) => {
+      evt.preventDefault();
+      this._onDataChange(this, evt.target.dataset.id, null)();
+      this._newFilmDetail._comments = this._movie.comments;
+      this._newFilmDetail.rerender();
+    };
+
     const filmCardClickHandler = (el) => {
       return () => {
         this._onViewChange();
         this._newFilmDetail = new FilmDetails(el);
         this._newFilmDetail.setAlreadyWatchedClickHandler(alreadyWatchedClickHandler);
+        this._newFilmDetail.setDeleteClickHandler(deleteClickHandler);
         render(this._footerBlock, this._newFilmDetail.getElement(), renderPosition.AFTEREND);
         this._mode = mode.POPUP;
         document.addEventListener(`keydown`, escPressHandler);

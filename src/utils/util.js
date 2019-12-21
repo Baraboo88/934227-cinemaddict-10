@@ -16,6 +16,13 @@ export const monthNames = [
   `December`
 ];
 
+export const filterTypes = {
+  ALL: `all`,
+  WHATCHLIST: `watchlist`,
+  HISTORY: `history`,
+  FAVORITES: `favorites`
+};
+
 
 export const renderPosition = {
   AFTEREND: `afterend`,
