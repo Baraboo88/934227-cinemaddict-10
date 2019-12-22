@@ -158,4 +158,15 @@ export default class PageController {
       );
     }
   }
+
+  hide() {
+    this._films.hide();
+    this._sort.hide();
+  }
+
+  show() {
+    this._films.show();
+    this._films.show();
+  }
+
 }
