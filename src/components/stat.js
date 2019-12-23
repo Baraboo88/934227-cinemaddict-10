@@ -1,58 +1,125 @@
 import AbstractComponent from './abstract-component';
 import Chart from 'chart.js';
 import chartjsPlugin from 'chartjs-plugin-datalabels';
+import moment from 'moment';
 
-Chart.defaults.global.plugins.datalabels.anchor = 'start';
+const getWeekData = (data) => {
+  const end = moment();
+  const start = end.subtract(7, `d`);
+  const returningData = [...data];
+  return returningData.filter((el) => el.whatchedDate > start);
+};
+const getTodayData = (data) => {
+  const end = moment();
+  const start = end.startOf(`day`);
+  const returningData = [...data];
+  return returningData.filter((el) => el.whatchedDate > start);
+};
+const getYearData = (data) => {
+  const end = moment();
+  const start = end.subtract(365, `d`);
+  const returningData = [...data];
+  return returningData.filter((el) => el.whatchedDate > start);
+};
+const getMonthData = (data) => {
+  const end = moment();
+  const start = end.subtract(30, `d`);
+  const returningData = [...data];
+  return returningData.filter((el) => el.whatchedDate > start);
+};
 
-const renderChart = () => {
-  const ctx = document.querySelector(`.statistic__chart`).getContext('2d');
+const getSortedGenres = (data) => {
+  const genresSet = new Set();
+  const allGenres = [];
+  data.forEach((element) =>
+    [...element.genres].forEach((el) => {
+      allGenres.push(el);
+      genresSet.add(el);
+    })
+  );
+
+  const genresMap = [...genresSet].map((el) => {
+    let countNum = 0;
+    allGenres.forEach((el2) => (el2 === el ? countNum++ : ``));
+    return {genre: el, count: countNum};
+  });
+
+  return genresMap.sort((a, b) => b.count - a.count);
+};
+
+const renderChart = (data) => {
+  const genres = getSortedGenres(data);
+
+  const ctx = document.querySelector(`.statistic__chart`).getContext(`2d`);
   const myChart = new Chart(ctx, {
     plugins: [chartjsPlugin],
-    type: 'horizontalBar',
+    type: `horizontalBar`,
     data: {
-      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+      labels: genres.map((el) => el.genre),
       datasets: [
         {
-          data: [12, 19, 3, 5, 10, 3],
-          backgroundColor: '#ffe800',
-          strokeColor:
-            `#ffe800`,
+          data: genres.map((el) => el.count),
+          backgroundColor: `#ffe800`,
+          strokeColor: `#ffe800`,
           borderWidth: 1,
-          order: -1,
-
+          datalabels: {
+            anchor: `start`,
+            align: `start`,
+            offset: 50,
+            color: `#ffffff`,
+            font: {
+              size: 16
+            },
+            formatter: (value, context) =>
+              `${context.chart.data.labels[context.dataIndex]}             ${value}`
+          }
         }
       ]
     },
     options: {
+      responsive: true,
       maintainAspectRatio: false,
-    responsive: true,
-      plugins: {
-           datalabels: {
-        color: `#ffffff`,
-        anchor: 'start',
-        align: 'center',
-        formatter: Math.round,
-        font: {
-          weight: 'bold'
-        }
-       
-       }
-      },
       legend: {
         display: false
-    },
+      },
+      tooltips: {
+        enabled: false
+      },
+      layout: {
+        padding: {
+          left: 200
+        }
+      },
       scales: {
-        xAxes: [{
-
-              display: false
-            
-        }]
-    }
+        xAxes: [
+          {
+            display: false,
+            ticks: {
+              stepSize: 1,
+              beginAtZero: true
+            }
+          }
+        ],
+        yAxes: [
+          {
+            display: false,
+            barPercentage: 0.5,
+            categoryPercentage: 1
+          }
+        ]
+      }
     }
   });
-}
+  return myChart;
+};
 
-const template = () => {
+const template = (data) => {
+  const sortedByGenres = getSortedGenres(data);
+  const topGenre = sortedByGenres[0] ? sortedByGenres[0].genre : `Null`;
+  const whatchedCount = data.length;
+
+  const totalDuration = moment.duration(data.reduce((acc, el) => acc + el.runTime, 0));
+
   return `<section class="statistic visually-hidden">
     <p class="statistic__rank">
       Your rank
@@ -78,26 +145,28 @@ const template = () => {
       <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year">
       <label for="statistic-year" class="statistic__filters-label">Year</label>
     </form>
-
+    <div class= "statistic__updated-wrapper">
     <ul class="statistic__text-list">
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">You watched</h4>
-        <p class="statistic__item-text">22 <span class="statistic__item-description">movies</span></p>
+        <p class="statistic__item-text">${whatchedCount} <span class="statistic__item-description">movies</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
-        <p class="statistic__item-text">130 <span class="statistic__item-description">h</span> 22 <span class="statistic__item-description">m</span></p>
+        <p class="statistic__item-text">${totalDuration.hours() +
+          totalDuration.days() *
+            24} <span class="statistic__item-description">h</span> ${totalDuration.minutes()} <span class="statistic__item-description">m</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
-        <p class="statistic__item-text">Sci-Fi</p>
+        <p class="statistic__item-text">${topGenre}</p>
       </li>
     </ul>
 
     <div class="statistic__chart-wrap">
       <canvas class="statistic__chart" width="1000"></canvas>
     </div>
-
+    </div>
   </section>
   `;
 };
@@ -105,14 +174,58 @@ const template = () => {
 export default class Stat extends AbstractComponent {
   constructor(films) {
     super();
-    this._films = films;
+    this._films = films.filter((el) => el.isInHistory);
+    this._filteredData = this._films;
+    this._filterChangeHandler = (evt) => {
+      switch (evt.target.value) {
+        case `week`:
+          this._filteredData = getWeekData(this._films);
+          this.rerender();
+          break;
+        case `today`:
+          this._filteredData = getTodayData(this._films);
+          this.rerender();
+          break;
+        case `year`:
+          this._filteredData = getYearData(this._films);
+          this.rerender();
+          break;
+        case `month`:
+          this._filteredData = getMonthData(this._films);
+          this.rerender();
+          break;
+        default:
+          this._filteredData = this._films;
+          this.rerender();
+      }
+    };
+
+    this.rerender = () => {
+      const prevElement = this.getElement();
+      this.removeElement();
+      const newElement = this.getElement();
+      prevElement
+        .querySelector(`.statistic__updated-wrapper`)
+        .parentElement.replaceChild(
+            newElement.querySelector(`.statistic__updated-wrapper`),
+            prevElement.querySelector(`.statistic__updated-wrapper`)
+        );
+      this.setElement(prevElement);
+      renderChart(this._filteredData);
+    };
   }
 
   getTemplate() {
-    return template();
+    return template(this._filteredData);
+  }
+
+  setFilterListener() {
+    const filters = this.getElement().querySelector(`.statistic__filters`);
+    filters.addEventListener(`change`, this._filterChangeHandler);
   }
 
   renderChart() {
-    renderChart();
+    renderChart(this._films);
+    this.setFilterListener();
   }
 }

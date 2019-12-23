@@ -96,7 +96,7 @@ export default class PageController {
   }
 
   render() {
-    this._navigation = new NavigationController(this._container, this._movies);
+    this._navigation = new NavigationController(this._container, this._movies, this);
     this._showFilmsCount = NUMBER_OF_FILMS_ADD;
 
     this._navigation.render();

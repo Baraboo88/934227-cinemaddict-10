@@ -86,7 +86,8 @@ export default class MovieController {
 
     const alreadyWatchedClickHandler = () => {
       this._newFilmDetail._isInHistory = !this._newFilmDetail._isInHistory;
-      this._onDataChange(this, this._movie, Object.assign({}, this._movie, {isInHistory: this._newFilmDetail.getIsWached()}))();
+      const whachedDateNow = this._newFilmDetail.getIsWached() ? new Date() : null;
+      this._onDataChange(this, this._movie, Object.assign({}, this._movie, {isInHistory: this._newFilmDetail.getIsWached(), whatchedDate: whachedDateNow}))();
       this._newFilmDetail.rerender();
     };
 
@@ -115,7 +116,8 @@ export default class MovieController {
     this._newCard.setCardTitleClickHandler(filmCardClickHandler(movie));
     this._newCard.setCardCommentsClickHandler(filmCardClickHandler(movie));
     this._newCard.setAddToWatchlistClickHandler(this._onDataChange(this, movie, Object.assign({}, movie, {isInWatchList: !movie.isInWatchList})));
-    this._newCard.setAlreadyWatchedClickHandler(this._onDataChange(this, movie, Object.assign({}, movie, {isInHistory: !movie.isInHistory})));
+    const whachedNow = !movie.isInHistory ? new Date() : null;
+    this._newCard.setAlreadyWatchedClickHandler(this._onDataChange(this, movie, Object.assign({}, movie, {isInHistory: !movie.isInHistory, whatchedDate: whachedNow})));
     this._newCard.setAddToFavoritesClickHandler(this._onDataChange(this, movie, Object.assign({}, movie, {isFavorite: !movie.isFavorite})));
 
     if (prevCard) {
