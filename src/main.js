@@ -16,31 +16,13 @@ const filmsData = getFilmsTemplate(NUMBER_OF_FILMS_MAIN);
 const movies = new Movies();
 movies.setMovies(filmsData);
 const stat = new Stat(movies.getMovies());
-let prevNav = null;
-const pageController = new PageController(mainBlock, movies);
+
+const pageController = new PageController(mainBlock, movies, stat);
 
 render(headerBlock, new Profile(filmsData.filter((el) => el.isInWatchList).length).getElement());
 
 pageController.render();
 
 render(mainBlock, stat.getElement());
-
-const mainNavigation = mainBlock.querySelector(`.main-navigation`);
-
-const clickNavHandler = (evt) => {
-  if (evt.target.href === `http://localhost:8080/#stats`) {
-    pageController.hide();
-    stat.show();
-    stat.renderChart();
-    prevNav = stat;
-
-  } else if (prevNav) {
-    stat.hide();
-    pageController.show();
-    prevNav = null;
-  }
-};
-
-mainNavigation.addEventListener(`click`, clickNavHandler);
 
 render(footerBlock, new FooterStat(filmsData.length).getElement());

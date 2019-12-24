@@ -4,18 +4,31 @@ import {generateFilters} from '../mock/filters';
 import {filterTypes} from '../utils/util';
 
 export default class NavigationController {
-  constructor(container, model, pageController) {
+  constructor(container, model, pageController, stat) {
     this._container = container;
     this._model = model;
     this._navigation = null;
     this._pageController = pageController;
+    this._stat = stat;
     this._activeFilter = filterTypes.ALL;
     this._onDataChange = () => {
       this.rerender();
     };
     this._onFilterChange = (filterType) => {
-      this._activeFilter = filterType;
-      this._model.setFilter(filterType);
+      if (filterType === `stats`) {
+        pageController.hide();
+        stat.show();
+        stat.renderChart();
+        this._activeFilter = filterType;
+      } else if (this._activeFilter === `stats`) {
+        stat.hide();
+        pageController.show();
+        this._activeFilter = filterType;
+        this._model.setFilter(filterType);
+      } else {
+        this._activeFilter = filterType;
+        this._model.setFilter(filterType);
+      }
     };
     this._model.setDataChangeHandler(this._onDataChange);
   }

@@ -115,7 +115,7 @@ const renderChart = (data) => {
 
 const template = (data) => {
   const sortedByGenres = getSortedGenres(data);
-  const topGenre = sortedByGenres[0] ? sortedByGenres[0].genre : `Null`;
+  const topGenre = sortedByGenres[0] ? sortedByGenres[0].genre : `-`;
   const whatchedCount = data.length;
 
   const totalDuration = moment.duration(data.reduce((acc, el) => acc + el.runTime, 0));
