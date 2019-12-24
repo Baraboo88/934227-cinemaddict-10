@@ -11,7 +11,7 @@ const getWeekData = (data) => {
 };
 const getTodayData = (data) => {
   const end = moment();
-  const start = end.startOf(`day`);
+  const start = end.startOf(`day`).toDate();
   const returningData = [...data];
   return returningData.filter((el) => el.whatchedDate > start);
 };
@@ -172,30 +172,30 @@ const template = (data) => {
 };
 
 export default class Stat extends AbstractComponent {
-  constructor(films) {
+  constructor(model) {
     super();
-    this._films = films.filter((el) => el.isInHistory);
-    this._filteredData = this._films;
+    this._model = model;
+    this._filteredData = model.getMoviesAll().filter((el) => el.isInHistory);
     this._filterChangeHandler = (evt) => {
       switch (evt.target.value) {
         case `week`:
-          this._filteredData = getWeekData(this._films);
+          this._filteredData = getWeekData(this._model.getMoviesAll().filter((el) => el.isInHistory));
           this.rerender();
           break;
         case `today`:
-          this._filteredData = getTodayData(this._films);
+          this._filteredData = getTodayData(this._model.getMoviesAll().filter((el) => el.isInHistory));
           this.rerender();
           break;
         case `year`:
-          this._filteredData = getYearData(this._films);
+          this._filteredData = getYearData(this._model.getMoviesAll().filter((el) => el.isInHistory));
           this.rerender();
           break;
         case `month`:
-          this._filteredData = getMonthData(this._films);
+          this._filteredData = getMonthData(this._model.getMoviesAll().filter((el) => el.isInHistory));
           this.rerender();
           break;
         default:
-          this._filteredData = this._films;
+          this._filteredData = this._model.getMoviesAll().filter((el) => el.isInHistory);
           this.rerender();
       }
     };
@@ -204,6 +204,7 @@ export default class Stat extends AbstractComponent {
       const prevElement = this.getElement();
       this.removeElement();
       const newElement = this.getElement();
+
       prevElement
         .querySelector(`.statistic__updated-wrapper`)
         .parentElement.replaceChild(
@@ -215,6 +216,7 @@ export default class Stat extends AbstractComponent {
     };
   }
 
+
   getTemplate() {
     return template(this._filteredData);
   }
@@ -225,7 +227,8 @@ export default class Stat extends AbstractComponent {
   }
 
   renderChart() {
-    renderChart(this._films);
+    this._filteredData = this._model.getMoviesAll().filter((el) => el.isInHistory);
+    this.rerender();
     this.setFilterListener();
   }
 }

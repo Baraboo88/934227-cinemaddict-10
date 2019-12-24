@@ -86,8 +86,8 @@ export default class MovieController {
 
     const alreadyWatchedClickHandler = () => {
       this._newFilmDetail._isInHistory = !this._newFilmDetail._isInHistory;
-      const whachedDateNow = this._newFilmDetail.getIsWached() ? new Date() : null;
-      this._onDataChange(this, this._movie, Object.assign({}, this._movie, {isInHistory: this._newFilmDetail.getIsWached(), whatchedDate: whachedDateNow}))();
+      const watchedDateNow = this._newFilmDetail.getIsWached() ? new Date() : null;
+      this._onDataChange(this, this._movie, Object.assign({}, this._movie, {isInHistory: this._newFilmDetail.getIsWached(), whatchedDate: watchedDateNow}))();
       this._newFilmDetail.rerender();
     };
 
