@@ -176,29 +176,12 @@ export default class Stat extends AbstractComponent {
     super();
     this._model = model;
     this._filteredData = model.getMoviesAll().filter((el) => el.isInHistory);
+    this._filterType = `all`;
     this._filterChangeHandler = (evt) => {
-      switch (evt.target.value) {
-        case `week`:
-          this._filteredData = getWeekData(this._model.getMoviesAll().filter((el) => el.isInHistory));
-          this.rerender();
-          break;
-        case `today`:
-          this._filteredData = getTodayData(this._model.getMoviesAll().filter((el) => el.isInHistory));
-          this.rerender();
-          break;
-        case `year`:
-          this._filteredData = getYearData(this._model.getMoviesAll().filter((el) => el.isInHistory));
-          this.rerender();
-          break;
-        case `month`:
-          this._filteredData = getMonthData(this._model.getMoviesAll().filter((el) => el.isInHistory));
-          this.rerender();
-          break;
-        default:
-          this._filteredData = this._model.getMoviesAll().filter((el) => el.isInHistory);
-          this.rerender();
-      }
+      this._setFilterData(evt.target.value);
+      this.rerender();
     };
+
 
     this.rerender = () => {
       const prevElement = this.getElement();
@@ -216,6 +199,31 @@ export default class Stat extends AbstractComponent {
     };
   }
 
+  _setFilterData(filter) {
+    switch (filter) {
+      case `week`:
+        this._filteredData = getWeekData(this._model.getMoviesAll().filter((el) => el.isInHistory));
+        this._filterType = `week`;
+        break;
+      case `today`:
+        this._filteredData = getTodayData(this._model.getMoviesAll().filter((el) => el.isInHistory));
+        this._filterType = `today`;
+        break;
+      case `year`:
+        this._filteredData = getYearData(this._model.getMoviesAll().filter((el) => el.isInHistory));
+        this._filterType = `year`;
+        break;
+      case `month`:
+        this._filteredData = getMonthData(this._model.getMoviesAll().filter((el) => el.isInHistory));
+        this._filterType = `month`;
+        this.rerender();
+        break;
+      default:
+        this._filteredData = this._model.getMoviesAll().filter((el) => el.isInHistory);
+        this._filterType = `all`;
+        this.rerender();
+    }
+  }
 
   getTemplate() {
     return template(this._filteredData);
@@ -227,7 +235,7 @@ export default class Stat extends AbstractComponent {
   }
 
   renderChart() {
-    this._filteredData = this._model.getMoviesAll().filter((el) => el.isInHistory);
+    this._setFilterData(this._filterType);
     this.rerender();
     this.setFilterListener();
   }
