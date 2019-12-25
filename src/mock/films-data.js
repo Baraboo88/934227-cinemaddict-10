@@ -62,6 +62,10 @@ const getFilmTemplate = () => {
   const releaseDate = new Date(new Date().setDate(new Date().getDate() - Math.floor(Math.random() * 10000))
   );
 
+  const whatchedDateCalc = new Date(new Date().setDate(new Date().getDate() - (Math.random() * Math.round((new Date() - releaseDate) / (1000 * 60 * 60 * 24)))));
+
+  const isInHistory = Math.random() > 0.5;
+
   const minsToMilliseconds = (minutes) => minutes * 60 * 1000;
 
   const runTime = getRandomNumber(minsToMilliseconds(120), minsToMilliseconds(60));
@@ -80,8 +84,9 @@ const getFilmTemplate = () => {
     runTime,
     isFavorite: Math.random() > 0.5,
     isInWatchList: Math.random() > 0.5,
-    isInHistory: Math.random() > 0.5,
-    comments: getComments()
+    isInHistory,
+    whatchedDate: isInHistory ? whatchedDateCalc : null,
+    comments: getComments(),
   };
 };
 

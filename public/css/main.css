@@ -1073,6 +1073,7 @@ button {
 .statistic__chart-wrap {
   margin-left: 30px;
   width: 1000px;
+  height: 300px;
 }
 .no-result {
   min-height: 300px;

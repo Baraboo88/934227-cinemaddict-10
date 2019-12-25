@@ -20,11 +20,12 @@ const renderMovies = (container, movies, onDataChange, onViewChange) => {
 };
 
 export default class PageController {
-  constructor(container, movies) {
+  constructor(container, movies, stat) {
     this._container = container;
     this._showMoreButton = new ShowMoreButton();
     this._films = new Films();
     this._sort = new Sort();
+    this._stat = stat;
     this._moviesControllers = [];
     this._moviesDataArray = null;
     this._navigation = null;
@@ -96,7 +97,7 @@ export default class PageController {
   }
 
   render() {
-    this._navigation = new NavigationController(this._container, this._movies);
+    this._navigation = new NavigationController(this._container, this._movies, this, this._stat);
     this._showFilmsCount = NUMBER_OF_FILMS_ADD;
 
     this._navigation.render();
@@ -158,4 +159,15 @@ export default class PageController {
       );
     }
   }
+
+  hide() {
+    this._films.hide();
+    this._sort.hide();
+  }
+
+  show() {
+    this._films.show();
+    this._sort.show();
+  }
+
 }
