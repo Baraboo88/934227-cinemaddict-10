@@ -25,7 +25,7 @@ export const renderComments = (comments) => {
 };
 
 
-const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
+const addFilmDetails = (data, isInHistory, emojiIMG, commentsArr, isInWatchList, isFavorite, personalRating) => {
 
   const {
     name,
@@ -38,7 +38,8 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
     country,
     genres,
     description,
-    poster
+    poster,
+    ageRating
   } = data;
   const comments = commentsArr;
 
@@ -49,7 +50,7 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
   };
 
   const renderMarks = () => {
-    if (flag) {
+    if (isInHistory) {
       return `  <div class="form-details__middle-container">
       <section class="film-details__user-rating-wrap">
         <div class="film-details__user-rating-controls">
@@ -67,31 +68,31 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
             <p class="film-details__user-rating-feelings">How you feel it?</p>
 
             <div class="film-details__user-rating-score">
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="1" id="rating-1">
+              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" ${personalRating === 1 ? `checked` : ``} value="1" id="rating-1">
               <label class="film-details__user-rating-label" for="rating-1">1</label>
 
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="2" id="rating-2">
+              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" ${personalRating === 2 ? `checked` : ``} value="2" id="rating-2">
               <label class="film-details__user-rating-label" for="rating-2">2</label>
 
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="3" id="rating-3">
+              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" ${personalRating === 3 ? `checked` : ``} value="3" id="rating-3">
               <label class="film-details__user-rating-label" for="rating-3">3</label>
 
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="4" id="rating-4">
+              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" ${personalRating === 4 ? `checked` : ``} value="4" id="rating-4">
               <label class="film-details__user-rating-label" for="rating-4">4</label>
 
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="5" id="rating-5">
+              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" ${personalRating === 5 ? `checked` : ``} value="5" id="rating-5">
               <label class="film-details__user-rating-label" for="rating-5">5</label>
 
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="6" id="rating-6">
+              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" ${personalRating === 6 ? `checked` : ``} value="6" id="rating-6">
               <label class="film-details__user-rating-label" for="rating-6">6</label>
 
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="7" id="rating-7">
+              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" ${personalRating === 7 ? `checked` : ``} value="7" id="rating-7">
               <label class="film-details__user-rating-label" for="rating-7">7</label>
 
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="8" id="rating-8">
+              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" ${personalRating === 8 ? `checked` : ``} value="8" id="rating-8">
               <label class="film-details__user-rating-label" for="rating-8">8</label>
 
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="9" id="rating-9">
+              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" ${personalRating === 9 ? `checked` : ``} value="9" id="rating-9">
               <label class="film-details__user-rating-label" for="rating-9">9</label>
 
             </div>
@@ -116,7 +117,7 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
         <div class="film-details__poster">
           <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
 
-          <p class="film-details__age">18+</p>
+          <p class="film-details__age">${ageRating}+</p>
         </div>
 
         <div class="film-details__info">
@@ -171,13 +172,13 @@ const addFilmDetails = (data, flag, emojiIMG, commentsArr) => {
       </div>
 
       <section class="film-details__controls">
-        <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
+        <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" ${isInWatchList ? `checked` : ``} name="watchlist">
         <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
         <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched">
         <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-        <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
+        <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" ${isFavorite ? `checked` : ``} name="favorite">
         <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
       </section>
     </div>
@@ -236,9 +237,16 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._data = data;
     this.closeHandler = null;
     this._alreadyWatchedHandler = null;
+    this._addToWatchlistHandler = null;
+    this._addToFavoriteHandler = null;
+    this._personalRatingHandler = null;
     this._deleteClickHandler = null;
+    this._undoPersonalRatingHandler = null;
     this._emoji = null;
     this._isInHistory = data.isInHistory;
+    this._isInWatchList = data.isInWatchList;
+    this._isFavorite = data.isFavorite;
+    this._personalRating = data.personalRating;
     this._comments = Array.from(this._data.comments);
     this._subscribeOnEvents();
   }
@@ -256,7 +264,7 @@ export default class FilmDetails extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return addFilmDetails(this._data, this._isInHistory, this._emoji, this._comments);
+    return addFilmDetails(this._data, this._isInHistory, this._emoji, this._comments, this._isInWatchList, this._isFavorite, this._personalRating);
   }
 
   setCloseButtonClickHandler(handler) {
@@ -271,12 +279,39 @@ export default class FilmDetails extends AbstractSmartComponent {
     this.setCloseButtonClickHandler(this.closeHandler);
     this.setAlreadyWatchedClickHandler(this._alreadyWatchedHandler);
     this.setDeleteClickHandler(this._deleteClickHandler);
+    this.setAddToWatchlistClickHandler(this._addToWatchlistHandler);
+    this.setAddPersonalRatingHandler(this._personalRatingHandler);
+    this.setUndoPersonalRatingHandler(this._undoPersonalRatingHandler);
   }
 
   setAlreadyWatchedClickHandler(handler) {
     this._alreadyWatchedHandler = handler;
     this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, handler);
 
+  }
+
+  setAddToWatchlistClickHandler(handler) {
+    this._addToWatchlistHandler = handler;
+    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, handler);
+  }
+
+  setAddToFavoriteClickHandler(handler) {
+    this._addToFavoriteHandler = handler;
+    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, handler);
+  }
+
+  setAddPersonalRatingHandler(handler) {
+    this._personalRatingHandler = handler;
+    if (this._isInHistory) {
+      this.getElement().querySelector(`.film-details__user-rating-score`).addEventListener(`click`, handler);
+    }
+  }
+
+  setUndoPersonalRatingHandler(handler) {
+    this._undoPersonalRatingHandler = handler;
+    if (this._personalRating > 0 && this._isInHistory) {
+      this.getElement().querySelector(`.film-details__watched-reset`).addEventListener(`click`, handler);
+    }
   }
 
   setDeleteClickHandler(handler) {

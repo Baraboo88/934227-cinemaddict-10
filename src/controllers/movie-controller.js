@@ -3,6 +3,7 @@ import {remove, render, replace} from "../utils/render";
 import FilmDetails from "../components/film-details";
 import {renderPosition} from "../utils/util";
 import {getRandomArrayElement, usersNames} from './../utils/util';
+import Movie from "../models/movie";
 
 const mode = {
   DEFAULT: `default`,
@@ -86,8 +87,46 @@ export default class MovieController {
 
     const alreadyWatchedClickHandler = () => {
       this._newFilmDetail._isInHistory = !this._newFilmDetail._isInHistory;
-      const watchedDateNow = this._newFilmDetail.getIsWached() ? new Date() : null;
-      this._onDataChange(this, this._movie, Object.assign({}, this._movie, {isInHistory: this._newFilmDetail.getIsWached(), whatchedDate: watchedDateNow}))();
+      const watchedDateNow = this._newFilmDetail.getIsWached() ? new Date() : this._movie.whatchedDate;
+      const newMoview = Movie.clone(movie);
+      newMoview.isInHistory = this._newFilmDetail.getIsWached();
+      newMoview.whatchedDate = watchedDateNow;
+      this._onDataChange(this, movie, newMoview);
+      this._newFilmDetail.rerender();
+    };
+
+    const addToWatchlistClickHandler = () => {
+      this._newFilmDetail._isInWatchList = !this._newFilmDetail._isInWatchList;
+      const newMoview = Movie.clone(movie);
+      newMoview.isInWatchList = !movie.isInWatchList;
+      this._onDataChange(this, movie, newMoview);
+      this._newFilmDetail.rerender();
+    };
+
+    const addToFavoriteClickHandler = () => {
+      this._newFilmDetail._isFavorite = !this._newFilmDetail._isFavorite;
+      const newMoview = Movie.clone(movie);
+      newMoview.isFavorite = !movie.isFavorite;
+      this._onDataChange(this, movie, newMoview);
+      this._newFilmDetail.rerender();
+    };
+
+    const addPersonalRatingHandler = (evt) => {
+      if (evt.target.value) {
+        const mark = evt.target.value;
+        this._newFilmDetail._personalRating = mark * 1;
+        const newMoview = Movie.clone(movie);
+        newMoview.personalRating = this._newFilmDetail._personalRating;
+        this._onDataChange(this, movie, newMoview);
+        this._newFilmDetail.rerender();
+      }
+    };
+
+    const undoPersonalRatingHandler = () => {
+      this._newFilmDetail._personalRating = 0;
+      const newMoview = Movie.clone(movie);
+      newMoview.personalRating = this._newFilmDetail._personalRating;
+      this._onDataChange(this, movie, newMoview);
       this._newFilmDetail.rerender();
     };
 
@@ -103,6 +142,10 @@ export default class MovieController {
         this._onViewChange();
         this._newFilmDetail = new FilmDetails(el);
         this._newFilmDetail.setAlreadyWatchedClickHandler(alreadyWatchedClickHandler);
+        this._newFilmDetail.setAddToWatchlistClickHandler(addToWatchlistClickHandler);
+        this._newFilmDetail.setAddToFavoriteClickHandler(addToFavoriteClickHandler);
+        this._newFilmDetail.setAddPersonalRatingHandler(addPersonalRatingHandler);
+        this._newFilmDetail.setUndoPersonalRatingHandler(undoPersonalRatingHandler);
         this._newFilmDetail.setDeleteClickHandler(deleteClickHandler);
         render(this._footerBlock, this._newFilmDetail.getElement(), renderPosition.AFTEREND);
         this._mode = mode.POPUP;
@@ -112,13 +155,36 @@ export default class MovieController {
         this._newFilmDetail.setCloseButtonClickHandler(closeButtonClickHandler(this._newFilmDetail));
       };
     };
+    const movieCardAlreadyWatchedClickHandler = (evt) => {
+      evt.preventDefault();
+      const watchedNow = !movie.isInHistory ? new Date() : movie.whatchedDate;
+      const newMoview = Movie.clone(movie);
+      newMoview.isInHistory = !movie.isInHistory;
+      newMoview.whatchedDate = watchedNow;
+      this._onDataChange(this, movie, newMoview);
+    };
+
+    const movieCardAddToWatchlistClickHandler = (evt) => {
+      evt.preventDefault();
+      const newMoview = Movie.clone(movie);
+      newMoview.isInWatchList = !movie.isInWatchList;
+      this._onDataChange(this, movie, newMoview);
+    };
+
+    const movieAddToFavoritesClickHandler = (evt) => {
+      evt.preventDefault();
+      const newMoview = Movie.clone(movie);
+      newMoview.isFavorite = !movie.isFavorite;
+      this._onDataChange(this, movie, newMoview);
+    };
+
     this._newCard.setCardPosterClickHandler(filmCardClickHandler(movie));
     this._newCard.setCardTitleClickHandler(filmCardClickHandler(movie));
     this._newCard.setCardCommentsClickHandler(filmCardClickHandler(movie));
-    this._newCard.setAddToWatchlistClickHandler(this._onDataChange(this, movie, Object.assign({}, movie, {isInWatchList: !movie.isInWatchList})));
-    const watchedNow = !movie.isInHistory ? new Date() : null;
-    this._newCard.setAlreadyWatchedClickHandler(this._onDataChange(this, movie, Object.assign({}, movie, {isInHistory: !movie.isInHistory, whatchedDate: watchedNow})));
-    this._newCard.setAddToFavoritesClickHandler(this._onDataChange(this, movie, Object.assign({}, movie, {isFavorite: !movie.isFavorite})));
+    this._newCard.setAddToWatchlistClickHandler(movieCardAddToWatchlistClickHandler);
+
+    this._newCard.setAlreadyWatchedClickHandler(movieCardAlreadyWatchedClickHandler);
+    this._newCard.setAddToFavoritesClickHandler(movieAddToFavoritesClickHandler);
 
     if (prevCard) {
       replace(this._newCard.getElement(), prevCard.getElement());

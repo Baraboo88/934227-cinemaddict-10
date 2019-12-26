@@ -20,7 +20,8 @@ const renderMovies = (container, movies, onDataChange, onViewChange) => {
 };
 
 export default class PageController {
-  constructor(container, movies, stat) {
+  constructor(container, movies, stat, api) {
+    this._api = api;
     this._container = container;
     this._showMoreButton = new ShowMoreButton();
     this._films = new Films();
@@ -33,10 +34,7 @@ export default class PageController {
     this._showFilmsCount = 0;
     this._filmsListBlock = document.querySelector(`.films-list`);
     this._filmsContainer = document.querySelector(`.films-list__container`);
-    this._onDataChange = (movieController, oldMovieData, newMovieData) => (evt) => {
-      if (evt) {
-        evt.preventDefault();
-      }
+    this._onDataChange = (movieController, oldMovieData, newMovieData) => {
       if (newMovieData === null) {
         const oldMovie = Object.assign({}, movieController.getMovieData());
         const oldMovieComment = [...oldMovie.comments];
@@ -46,9 +44,15 @@ export default class PageController {
         this._movies.updateMovie(oldMovie.id, oldMovie);
         movieController.render(oldMovie);
       } else {
-        this._movies.updateMovie(newMovieData.id, newMovieData);
-        this._navigation.rerender();
-        movieController.render(newMovieData);
+        this._api.updateMovie(oldMovieData.id, newMovieData)
+                .then((updatedMovie) => {
+                  const isSuccess = this._movies.updateMovie(oldMovieData.id, updatedMovie);
+                  if (isSuccess) {
+                    this._navigation.rerender();
+                    movieController.render(newMovieData);
+                  }
+                });
+
       }
 
     };
