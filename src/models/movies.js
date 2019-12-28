@@ -41,9 +41,13 @@ export default class Movies {
     const tempArr = [...this._movies];
     const movieToChange = tempArr.find((el) => el.id === id);
     const index = tempArr.indexOf(movieToChange);
-    tempArr[index] = movie;
-    this._movies = tempArr;
-    this._dataChangeHandler();
+    if (index) {
+      tempArr[index] = movie;
+      this._movies = tempArr;
+      this._dataChangeHandler();
+      return true;
+    }
+    return false;
   }
 
   setDataChangeHandler(handler) {
