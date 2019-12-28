@@ -247,8 +247,7 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._isInWatchList = data.isInWatchList;
     this._isFavorite = data.isFavorite;
     this._personalRating = data.personalRating;
-    this._comments = Array.from(this._data.comments);
-    this._subscribeOnEvents();
+    this._comments = null;
   }
 
   getIsWached() {
@@ -275,7 +274,7 @@ export default class FilmDetails extends AbstractSmartComponent {
   }
 
   recoveryListeners() {
-    this._subscribeOnEvents();
+    this.subscribeOnEvents();
     this.setCloseButtonClickHandler(this.closeHandler);
     this.setAlreadyWatchedClickHandler(this._alreadyWatchedHandler);
     this.setDeleteClickHandler(this._deleteClickHandler);
@@ -320,7 +319,7 @@ export default class FilmDetails extends AbstractSmartComponent {
     deleteButtons.forEach((el) => el.addEventListener(`click`, handler));
   }
 
-  _subscribeOnEvents() {
+  subscribeOnEvents() {
 
     const emojiClickHandler = (evt) => {
       this._emoji = evt.target.value;

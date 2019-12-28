@@ -1,4 +1,5 @@
 import Movie from './models/movie';
+import Comment from "./models/comment";
 
 const methods = {
   GET: `GET`,
@@ -50,5 +51,11 @@ export default class API {
       .catch((err) => {
         throw err;
       });
+  }
+
+  getComments(id) {
+    return this._load({url: `comments/${id}`})
+      .then((response) => response.json())
+      .then(Comment.parseComments);
   }
 }

@@ -11,9 +11,9 @@ import NavigationController from './navigation-controller';
 const NUMBER_OF_FILMS_START = 5;
 const NUMBER_OF_FILMS_ADD = 5;
 
-const renderMovies = (container, movies, onDataChange, onViewChange) => {
+const renderMovies = (container, movies, onDataChange, onViewChange, api) => {
   return movies.map((movie) => {
-    const movieController = new MovieController(container, onDataChange, onViewChange);
+    const movieController = new MovieController(container, onDataChange, onViewChange, api);
     movieController.render(movie);
     return movieController;
   });
@@ -28,7 +28,6 @@ export default class PageController {
     this._sort = new Sort();
     this._stat = stat;
     this._moviesControllers = [];
-    this._moviesDataArray = null;
     this._navigation = null;
     this._movies = movies;
     this._showFilmsCount = 0;
@@ -52,7 +51,6 @@ export default class PageController {
                     movieController.render(newMovieData);
                   }
                 });
-
       }
 
     };
@@ -89,7 +87,8 @@ export default class PageController {
               this._filmsContainer,
               this._movies.getMovies().slice(previousShowCount, this._showFilmsCount),
               this._onDataChange,
-              this._onViewChange
+              this._onViewChange,
+              this._api
           )
       );
       if (this._showFilmsCount >= this._movies.getMovies()) {
@@ -133,7 +132,8 @@ export default class PageController {
             this._filmsContainer,
             filmsToRender.slice(0, NUMBER_OF_FILMS_START),
             this._onDataChange,
-            this._onViewChange
+            this._onViewChange,
+            this._api
         )
     );
     const getTwoTopElOfArr = (arr, comparator) => arr.sort(comparator).slice(0, 2);
@@ -150,7 +150,7 @@ export default class PageController {
       const elFilmLists = document.querySelectorAll(`.films-list--extra .films-list__container`);
       const topRatesBlock = elFilmLists[elFilmLists.length - 1];
       this._moviesControllers = this._moviesControllers.concat(
-          renderMovies(topRatesBlock, topRatedFilms, this._onDataChange, this._onViewChange)
+          renderMovies(topRatesBlock, topRatedFilms, this._onDataChange, this._onViewChange, this._api)
       );
     }
 
@@ -159,7 +159,7 @@ export default class PageController {
       const elFilmLists = document.querySelectorAll(`.films-list--extra .films-list__container`);
       const topCommentedBlock = elFilmLists[elFilmLists.length - 1];
       this._moviesControllers = this._moviesControllers.concat(
-          renderMovies(topCommentedBlock, topCommentedFilms, this._onDataChange, this._onViewChange)
+          renderMovies(topCommentedBlock, topCommentedFilms, this._onDataChange, this._onViewChange, this._api)
       );
     }
   }
