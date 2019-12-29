@@ -8,6 +8,7 @@ import Sort, {sortTypes} from '../components/sort';
 import MovieController from './movie-controller';
 import NavigationController from './navigation-controller';
 import Movie from "../models/movie";
+import Comment from "../models/comment";
 
 const NUMBER_OF_FILMS_START = 5;
 const NUMBER_OF_FILMS_ADD = 5;
@@ -50,26 +51,36 @@ export default class PageController {
           });
 
       } else if (filmDetail !== null) {
-        console.log(newMovieData)
         this._api.createComment(oldMovieData.id, newMovieData).then((response) => {
           const newMovie = Movie.parseMovie(response.movie);
           const newComments = Comment.parseComments(response.comments);
           const isSuccess = this._movies.updateMovie(oldMovieData.id, newMovie);
           if (isSuccess) {
             filmDetail._comments = newComments;
-            filmDetail.rerender();
+            filmDetail.setSending({flag: false, value: null});
             movieController.render(newMovie);
           }
-        });
+        })
+          .catch(() => {
+            movieController.shakeComment();
+          });
       } else {
         this._api.updateMovie(oldMovieData.id, newMovieData)
                 .then((updatedMovie) => {
                   const isSuccess = this._movies.updateMovie(oldMovieData.id, updatedMovie);
+                  if (movieController._isRatingChanging) {
+                    movieController._isRatingChanging = false;
+                  }
                   if (isSuccess) {
                     this._navigation.rerender();
                     movieController.render(newMovieData);
                   }
-                });
+                })
+          .catch(() => {
+            if (movieController._isRatingChanging) {
+              movieController.shakePersonalRating();
+            }
+          });
       }
 
     };

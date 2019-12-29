@@ -25,7 +25,7 @@ export const renderComments = (comments) => {
 };
 
 
-const addFilmDetails = (data, isInHistory, emojiIMG, commentsArr, isInWatchList, isFavorite, personalRating) => {
+const addFilmDetails = (data, isInHistory, emojiIMG, commentsArr, isInWatchList, isFavorite, personalRating, sendingObj) => {
 
   const {
     name,
@@ -200,7 +200,7 @@ const addFilmDetails = (data, isInHistory, emojiIMG, commentsArr, isInWatchList,
         </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="${sendingObj.value ? sendingObj.value : `Select reaction below and write comment here`}" name="comment" ${sendingObj.flag ? `disabled` : ``}></textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -248,22 +248,28 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._isFavorite = data.isFavorite;
     this._personalRating = data.personalRating;
     this._comments = null;
+    this._sendingObj = {flag: false, value: null};
   }
 
-  getIsWached() {
+  getIsWatched() {
     return this._isInHistory;
   }
-
-  addComment(comment) {
-    this._comments = [...this._comments, comment];
-  }
-
   getComments() {
     return this._comments;
   }
 
   getTemplate() {
-    return addFilmDetails(this._data, this._isInHistory, this._emoji, this._comments, this._isInWatchList, this._isFavorite, this._personalRating);
+    return addFilmDetails(this._data, this._isInHistory, this._emoji, this._comments, this._isInWatchList, this._isFavorite, this._personalRating, this._sendingObj);
+  }
+
+  setSending(data) {
+    this._sendingObj = data;
+    this.rerender();
+  }
+
+  resetPersonalRating() {
+    this._personalRating = 0;
+    this.rerender();
   }
 
   setCloseButtonClickHandler(handler) {
