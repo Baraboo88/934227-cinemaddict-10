@@ -7,6 +7,7 @@ import Films from '../components/films';
 import Sort, {sortTypes} from '../components/sort';
 import MovieController from './movie-controller';
 import NavigationController from './navigation-controller';
+import Movie from "../models/movie";
 
 const NUMBER_OF_FILMS_START = 5;
 const NUMBER_OF_FILMS_ADD = 5;
@@ -33,15 +34,33 @@ export default class PageController {
     this._showFilmsCount = 0;
     this._filmsListBlock = document.querySelector(`.films-list`);
     this._filmsContainer = document.querySelector(`.films-list__container`);
-    this._onDataChange = (movieController, oldMovieData, newMovieData) => {
+    this._onDataChange = (movieController, oldMovieData, newMovieData, filmDetail = null) => {
       if (newMovieData === null) {
-        const oldMovie = Object.assign({}, movieController.getMovieData());
-        const oldMovieComment = [...oldMovie.comments];
-        const index = oldMovieComment.findIndex((el) => el.id === (oldMovieData * 1));
-        oldMovieComment.splice(index, 1);
-        oldMovie.comments = oldMovieComment;
-        this._movies.updateMovie(oldMovie.id, oldMovie);
-        movieController.render(oldMovie);
+        this._api.deleteComment(oldMovieData)
+          .then(() => {
+            const oldMovie = Movie.clone(movieController.getMovieData());
+            const oldMovieComments = [...filmDetail._comments];
+            const index = oldMovieComments.findIndex((el) => el.id * 1 === oldMovieData * 1);
+            oldMovieComments.splice(index, 1);
+            oldMovie.comments = oldMovieComments.map((el) => el.id);
+            this._movies.updateMovie(oldMovie.id, oldMovie);
+            movieController.render(oldMovie);
+            filmDetail._comments = oldMovieComments;
+            filmDetail.rerender();
+          });
+
+      } else if (filmDetail !== null) {
+        console.log(newMovieData)
+        this._api.createComment(oldMovieData.id, newMovieData).then((response) => {
+          const newMovie = Movie.parseMovie(response.movie);
+          const newComments = Comment.parseComments(response.comments);
+          const isSuccess = this._movies.updateMovie(oldMovieData.id, newMovie);
+          if (isSuccess) {
+            filmDetail._comments = newComments;
+            filmDetail.rerender();
+            movieController.render(newMovie);
+          }
+        });
       } else {
         this._api.updateMovie(oldMovieData.id, newMovieData)
                 .then((updatedMovie) => {

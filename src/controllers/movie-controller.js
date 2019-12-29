@@ -71,16 +71,11 @@ export default class MovieController {
         const image = imageAddress[imageAddress.length - 1];
         if (input.trim() !== ``) {
           const commentObj = {
-            user: getRandomArrayElement(usersNames),
             comment: input,
-            date: new Date(),
-            emoji: image
+            date: new Date().toISOString(),
+            emotion: image
           };
-          this._newFilmDetail.addComment(commentObj);
-
-          this._onDataChange(this, this._movie, Object.assign({}, this._movie, {comments: this._newFilmDetail.getComments()}))();
-
-          this._newFilmDetail.rerender();
+          this._onDataChange(this, this._movie, commentObj, this._newFilmDetail);
         }
 
       }
@@ -133,9 +128,7 @@ export default class MovieController {
 
     const deleteClickHandler = (evt) => {
       evt.preventDefault();
-      this._onDataChange(this, evt.target.dataset.id, null)();
-      this._newFilmDetail._comments = this._movie.comments;
-      this._newFilmDetail.rerender();
+      this._onDataChange(this, evt.target.dataset.id, null, this._newFilmDetail);
     };
 
     const filmCardClickHandler = (el) => {
