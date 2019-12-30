@@ -28,8 +28,6 @@ export default class API {
       .then(Movie.parseMovies);
   }
 
-  createComment() {}
-
   updateMovie(id, data) {
     return this._load({
       url: `movies/${id}`,

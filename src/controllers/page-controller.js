@@ -41,12 +41,11 @@ export default class PageController {
           .then(() => {
             const oldMovie = Movie.clone(movieController.getMovieData());
             const oldMovieComments = [...filmDetail._comments];
-            const index = oldMovieComments.findIndex((el) => el.id * 1 === oldMovieData * 1);
-            oldMovieComments.splice(index, 1);
-            oldMovie.comments = oldMovieComments.map((el) => el.id);
+            const filteredComments = oldMovieComments.filter((el) => el.id * 1 !== oldMovieData * 1);
+            oldMovie.comments = filteredComments.map((el) => el.id);
             this._movies.updateMovie(oldMovie.id, oldMovie);
             movieController.render(oldMovie);
-            filmDetail._comments = oldMovieComments;
+            filmDetail._comments = filteredComments;
             filmDetail.rerender();
           });
 
@@ -70,6 +69,20 @@ export default class PageController {
                   const isSuccess = this._movies.updateMovie(oldMovieData.id, updatedMovie);
                   if (movieController._isRatingChanging) {
                     movieController._isRatingChanging = false;
+                    movieController._newFilmDetail._personalRating = updatedMovie.personalRating;
+                    movieController._newFilmDetail.rerender();
+                  } else if (movieController._isFavoriteChanging) {
+                    movieController._isFavoriteChanging = false;
+                    movieController._newFilmDetail._isFavorite = updatedMovie.isFavorite;
+                    movieController._newFilmDetail.rerender();
+                  } else if (movieController._isAddToWatchListChanging) {
+                    movieController._isAddToWatchListChanging = false;
+                    movieController._newFilmDetail._isInWatchList = updatedMovie.isInWatchList;
+                    movieController._newFilmDetail.rerender();
+                  } else if (movieController._isInHistory) {
+                    movieController._isInHistory = false;
+                    movieController._newFilmDetail._isInHistory = updatedMovie.isInHistory;
+                    movieController._newFilmDetail.rerender();
                   }
                   if (isSuccess) {
                     this._navigation.rerender();

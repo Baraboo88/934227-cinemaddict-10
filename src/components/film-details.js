@@ -25,7 +25,7 @@ export const renderComments = (comments) => {
 };
 
 
-const addFilmDetails = (data, isInHistory, emojiIMG, commentsArr, isInWatchList, isFavorite, personalRating, sendingObj) => {
+const addFilmDetails = (data, isInHistory, emojiImg, commentsArr, isInWatchList, isFavorite, personalRating, sendingObj) => {
 
   const {
     name,
@@ -43,7 +43,7 @@ const addFilmDetails = (data, isInHistory, emojiIMG, commentsArr, isInWatchList,
   } = data;
   const comments = commentsArr;
 
-  const renderEmoji = () => emojiIMG ? `<img src="./images/emoji/${emojiIMG}.png" width="55" height="55" alt="emoji" class="film-details__add-emoji-img">` : ``;
+  const renderEmoji = () => emojiImg ? `<img src="./images/emoji/${emojiImg}.png" width="55" height="55" alt="emoji" class="film-details__add-emoji-img">` : ``;
 
   const getGenresName = (ganresSet) => {
     return [...ganresSet].length > 1 ? `Genres` : `Genre`;
@@ -175,7 +175,7 @@ const addFilmDetails = (data, isInHistory, emojiIMG, commentsArr, isInWatchList,
         <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" ${isInWatchList ? `checked` : ``} name="watchlist">
         <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-        <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched">
+        <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" ${isInHistory ? `checked` : ``} name="watched">
         <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
         <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" ${isFavorite ? `checked` : ``} name="favorite">
@@ -267,11 +267,6 @@ export default class FilmDetails extends AbstractSmartComponent {
     this.rerender();
   }
 
-  resetPersonalRating() {
-    this._personalRating = 0;
-    this.rerender();
-  }
-
   setCloseButtonClickHandler(handler) {
     this.closeHandler = handler;
     this.getElement()
@@ -287,6 +282,7 @@ export default class FilmDetails extends AbstractSmartComponent {
     this.setAddToWatchlistClickHandler(this._addToWatchlistHandler);
     this.setAddPersonalRatingHandler(this._personalRatingHandler);
     this.setUndoPersonalRatingHandler(this._undoPersonalRatingHandler);
+    this.setAddToFavoriteClickHandler(this._addToFavoriteHandler);
   }
 
   setAlreadyWatchedClickHandler(handler) {
