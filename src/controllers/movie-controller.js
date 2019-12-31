@@ -220,7 +220,6 @@ export default class MovieController {
     setTimeout(() => {
       this._newFilmDetail.getElement().querySelector(`.film-details__user-rating-score`).style.animation = ``;
       this._newFilmDetail.rerender();
-      this._isRatingChanging = false;
       this._newFilmDetail.getElement().querySelector(`.film-details__user-rating-score`).style.border = `none`;
     }, SHAKE_ANIMATION_TIMEOUT);
   }

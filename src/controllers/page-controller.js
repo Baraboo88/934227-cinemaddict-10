@@ -90,6 +90,11 @@ export default class PageController {
                   }
                 })
           .catch(() => {
+            movieController._isRatingChanging = false;
+            movieController._isFavoriteChanging = false;
+            movieController._isAddToWatchListChanging = false;
+            movieController._isAddToWatchListChanging = false;
+            movieController._isInHistory = false;
             if (movieController._isRatingChanging) {
               movieController.shakePersonalRating();
             }
