@@ -30,9 +30,10 @@ export default class PageController {
     this._sort = new Sort();
     this._stat = stat;
     this._moviesControllers = [];
+    this._filmsToRender = [];
     this._navigation = null;
     this._movies = movies;
-    this._showFilmsCount = 0;
+    this._showFilmsCount = NUMBER_OF_FILMS_START;
     this._filmsListBlock = document.querySelector(`.films-list`);
     this._filmsContainer = document.querySelector(`.films-list__container`);
     this._onDataChange = (movieController, oldMovieData, newMovieData, filmDetail = null) => {
@@ -65,30 +66,30 @@ export default class PageController {
           });
       } else {
         this._api.updateMovie(oldMovieData.id, newMovieData)
-                .then((updatedMovie) => {
-                  const isSuccess = this._movies.updateMovie(oldMovieData.id, updatedMovie);
-                  if (movieController._isRatingChanging) {
-                    movieController._isRatingChanging = false;
-                    movieController._newFilmDetail._personalRating = updatedMovie.personalRating;
-                    movieController._newFilmDetail.rerender();
-                  } else if (movieController._isFavoriteChanging) {
-                    movieController._isFavoriteChanging = false;
-                    movieController._newFilmDetail._isFavorite = updatedMovie.isFavorite;
-                    movieController._newFilmDetail.rerender();
-                  } else if (movieController._isAddToWatchListChanging) {
-                    movieController._isAddToWatchListChanging = false;
-                    movieController._newFilmDetail._isInWatchList = updatedMovie.isInWatchList;
-                    movieController._newFilmDetail.rerender();
-                  } else if (movieController._isInHistory) {
-                    movieController._isInHistory = false;
-                    movieController._newFilmDetail._isInHistory = updatedMovie.isInHistory;
-                    movieController._newFilmDetail.rerender();
-                  }
-                  if (isSuccess) {
-                    this._navigation.rerender();
-                    movieController.render(newMovieData);
-                  }
-                })
+          .then((updatedMovie) => {
+            const isSuccess = this._movies.updateMovie(oldMovieData.id, updatedMovie);
+            if (movieController._isRatingChanging) {
+              movieController._isRatingChanging = false;
+              movieController._newFilmDetail._personalRating = updatedMovie.personalRating;
+              movieController._newFilmDetail.rerender();
+            } else if (movieController._isFavoriteChanging) {
+              movieController._isFavoriteChanging = false;
+              movieController._newFilmDetail._isFavorite = updatedMovie.isFavorite;
+              movieController._newFilmDetail.rerender();
+            } else if (movieController._isAddToWatchListChanging) {
+              movieController._isAddToWatchListChanging = false;
+              movieController._newFilmDetail._isInWatchList = updatedMovie.isInWatchList;
+              movieController._newFilmDetail.rerender();
+            } else if (movieController._isInHistory) {
+              movieController._isInHistory = false;
+              movieController._newFilmDetail._isInHistory = updatedMovie.isInHistory;
+              movieController._newFilmDetail.rerender();
+            }
+            if (isSuccess) {
+              this._navigation.rerender();
+              movieController.render(newMovieData);
+            }
+          })
           .catch(() => {
             movieController._isRatingChanging = false;
             movieController._isFavoriteChanging = false;
@@ -133,13 +134,13 @@ export default class PageController {
       this._moviesControllers = this._moviesControllers.concat(
           renderMovies(
               this._filmsContainer,
-              this._movies.getMovies().slice(previousShowCount, this._showFilmsCount),
+              this._filmsToRender.slice(previousShowCount, this._showFilmsCount),
               this._onDataChange,
               this._onViewChange,
               this._api
           )
       );
-      if (this._showFilmsCount >= this._movies.getMovies()) {
+      if (this._showFilmsCount >= this._movies.getMovies().length) {
         remove(this._showMoreButton);
       }
     };
@@ -161,6 +162,7 @@ export default class PageController {
   }
 
   renderFilms(filmsToRender) {
+    this._filmsToRender = filmsToRender;
     this._showFilmsCount = NUMBER_OF_FILMS_ADD;
     while (this._filmsContainer.firstChild) {
       this._filmsContainer.removeChild(this._filmsContainer.firstChild);
@@ -188,8 +190,8 @@ export default class PageController {
     const getTwoTopRates = (arr) => getTwoTopElOfArr(arr, (a, b) => b.filmMark - a.filmMark);
     const getTwoTopCommented = (arr) =>
       getTwoTopElOfArr(arr, (a, b) => b.comments.length - a.comments.length);
-    const topRatedFilms = getTwoTopRates(filmsToRender);
-    const topCommentedFilms = getTwoTopCommented(filmsToRender);
+    const topRatedFilms = getTwoTopRates([...filmsToRender]);
+    const topCommentedFilms = getTwoTopCommented([...filmsToRender]);
     while (document.querySelector(`.films-list--extra`)) {
       document.querySelector(`.films-list--extra`).parentElement.removeChild(document.querySelector(`.films-list--extra`));
     }
