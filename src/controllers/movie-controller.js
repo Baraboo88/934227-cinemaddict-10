@@ -2,13 +2,14 @@ import FilmsCard from "../components/film-card";
 import {remove, render, replace} from "../utils/render";
 import FilmDetails from "../components/film-details";
 import {renderPosition} from "../utils/util";
-import {getRandomArrayElement, usersNames} from './../utils/util';
 import Movie from "../models/movie";
 
 const mode = {
   DEFAULT: `default`,
   POPUP: `popup`
 };
+
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export default class MovieController {
 
@@ -22,6 +23,11 @@ export default class MovieController {
     this._mode = mode.DEFAULT;
     this._newFilmDetail = null;
     this._movie = null;
+    this._ratingChanging = false;
+    this._isFavoriteChanging = false;
+    this._isAddToWatchListChanging = false;
+    this._isInHistory = false;
+    this._commentValue = null;
   }
 
   setDefaultView() {
@@ -71,55 +77,51 @@ export default class MovieController {
         const image = imageAddress[imageAddress.length - 1];
         if (input.trim() !== ``) {
           const commentObj = {
-            user: getRandomArrayElement(usersNames),
             comment: input,
-            date: new Date(),
-            emoji: image
+            date: new Date().toISOString(),
+            emotion: image.split(`.`).shift()
           };
-          this._newFilmDetail.addComment(commentObj);
-
-          this._onDataChange(this, this._movie, Object.assign({}, this._movie, {comments: this._newFilmDetail.getComments()}))();
-
-          this._newFilmDetail.rerender();
+          this._newFilmDetail.setSending({flag: true, value: input});
+          this._commentValue = input;
+          this._onDataChange(this, this._movie, commentObj, this._newFilmDetail);
         }
 
       }
     };
 
-    const alreadyWatchedClickHandler = () => {
-      this._newFilmDetail._isInHistory = !this._newFilmDetail._isInHistory;
-      const watchedDateNow = this._newFilmDetail.getIsWached() ? new Date() : this._movie.whatchedDate;
+    const alreadyWatchedClickHandler = (evt) => {
+      evt.preventDefault();
+      const watchedDateNow = this._newFilmDetail.getIsWatched() ? new Date() : this._movie.whatchedDate;
       const newMovie = Movie.clone(movie);
-      newMovie.isInHistory = this._newFilmDetail.getIsWached();
+      this._isInHistory = true;
+      newMovie.isInHistory = !this._newFilmDetail._isInHistory;
       newMovie.whatchedDate = watchedDateNow;
       this._onDataChange(this, movie, newMovie);
-      this._newFilmDetail.rerender();
     };
 
-    const addToWatchlistClickHandler = () => {
-      this._newFilmDetail._isInWatchList = !this._newFilmDetail._isInWatchList;
+    const addToWatchlistClickHandler = (evt) => {
+      evt.preventDefault();
+      this._isAddToWatchListChanging = true;
       const newMovie = Movie.clone(movie);
-      newMovie.isInWatchList = !movie.isInWatchList;
+      newMovie.isInWatchList = !this._newFilmDetail._isInWatchList;
       this._onDataChange(this, movie, newMovie);
-      this._newFilmDetail.rerender();
     };
 
-    const addToFavoriteClickHandler = () => {
-      this._newFilmDetail._isFavorite = !this._newFilmDetail._isFavorite;
+    const addToFavoriteClickHandler = (evt) => {
+      evt.preventDefault();
       const newMovie = Movie.clone(movie);
-      newMovie.isFavorite = !movie.isFavorite;
+      this._isFavoriteChanging = true;
+      newMovie.isFavorite = !this._newFilmDetail._isFavorite;
       this._onDataChange(this, movie, newMovie);
-      this._newFilmDetail.rerender();
     };
 
     const addPersonalRatingHandler = (evt) => {
       if (evt.target.value) {
+        this._isRatingChanging = true;
         const mark = evt.target.value;
-        this._newFilmDetail._personalRating = mark * 1;
         const newMovie = Movie.clone(movie);
-        newMovie.personalRating = this._newFilmDetail._personalRating;
+        newMovie.personalRating = mark * 1;
         this._onDataChange(this, movie, newMovie);
-        this._newFilmDetail.rerender();
       }
     };
 
@@ -133,9 +135,7 @@ export default class MovieController {
 
     const deleteClickHandler = (evt) => {
       evt.preventDefault();
-      this._onDataChange(this, evt.target.dataset.id, null)();
-      this._newFilmDetail._comments = this._movie.comments;
-      this._newFilmDetail.rerender();
+      this._onDataChange(this, evt.target.dataset.id, null, this._newFilmDetail);
     };
 
     const filmCardClickHandler = (el) => {
@@ -201,4 +201,28 @@ export default class MovieController {
       render(this._container, this._newCard.getElement());
     }
   }
+
+  shakeComment() {
+    this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).style.border = `2px solid red`;
+    setTimeout(() => {
+      this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).style.animation = ``;
+      this._newFilmDetail.setSending({flag: false, value: this._commentValue});
+
+      this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).style.border = `none`;
+      this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).value = this._commentValue;
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  shakePersonalRating() {
+    this._newFilmDetail.getElement().querySelector(`.film-details__user-rating-score`).style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._newFilmDetail.getElement().querySelector(`.film-details__user-rating-score`).style.border = `2px solid red`;
+    setTimeout(() => {
+      this._newFilmDetail.getElement().querySelector(`.film-details__user-rating-score`).style.animation = ``;
+      this._newFilmDetail.rerender();
+      this._newFilmDetail.getElement().querySelector(`.film-details__user-rating-score`).style.border = `none`;
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+
 }

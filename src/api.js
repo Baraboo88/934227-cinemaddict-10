@@ -28,8 +28,6 @@ export default class API {
       .then(Movie.parseMovies);
   }
 
-  createComment() {}
-
   updateMovie(id, data) {
     return this._load({
       url: `movies/${id}`,
@@ -40,8 +38,6 @@ export default class API {
     .then((response) => response.json())
     .then(Movie.parseMovie);
   }
-
-  deleteMovie() {}
 
   _load({url, method = methods.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
@@ -57,5 +53,19 @@ export default class API {
     return this._load({url: `comments/${id}`})
       .then((response) => response.json())
       .then(Comment.parseComments);
+  }
+
+  deleteComment(id) {
+    return this._load({url: `comments/${id}`, method: methods.DELETE});
+  }
+
+  createComment(id, comment) {
+    return this._load({
+      url: `comments/${id}`,
+      method: methods.POST,
+      body: JSON.stringify(comment),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json());
   }
 }

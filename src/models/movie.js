@@ -14,11 +14,10 @@ export default class Movie {
     this.description = data[`film_info`][`description`];
     this.poster = data[`film_info`][`poster`].split(`/`).slice(-1)[0];
     this.runTime = data[`film_info`][`runtime`] * 60 * 1000;
-    this.userDetails = data[`user_details`];
     this.isFavorite = data[`user_details`][`favorite`];
     this.isInWatchList = data[`user_details`][`watchlist`];
     this.isInHistory = data[`user_details`][`already_watched`];
-    this.whatchedDate = this.isInHistory ? new Date(data[`user_details`][`watching_date`]) : null;
+    this.whatchedDate = this.isInHistory ? new Date(data[`user_details`][`watching_date`]) : new Date();
     this.personalRating = data[`user_details`][`personal_rating`];
     this.ageRating = data[`film_info`][`age_rating`];
   }

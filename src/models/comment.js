@@ -15,8 +15,4 @@ export default class Comment {
   static parseComments(data) {
     return data.map(Comment.parseComment);
   }
-
-  static paserPOSTResponse(data) {
-    return new Comment(data.comments.pop());
-  }
 }
