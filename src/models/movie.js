@@ -17,7 +17,7 @@ export default class Movie {
     this.isFavorite = data[`user_details`][`favorite`];
     this.isInWatchList = data[`user_details`][`watchlist`];
     this.isInHistory = data[`user_details`][`already_watched`];
-    this.whatchedDate = this.isInHistory ? new Date(data[`user_details`][`watching_date`]) : null;
+    this.whatchedDate = this.isInHistory ? new Date(data[`user_details`][`watching_date`]) : new Date();
     this.personalRating = data[`user_details`][`personal_rating`];
     this.ageRating = data[`film_info`][`age_rating`];
   }
