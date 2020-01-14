@@ -4,7 +4,7 @@ import moment from 'moment';
 
 const getCommentedDate = (date) => moment(date).format(`YYYY/MM/DD HH:MM`);
 
-export const renderComments = (comments) => {
+export const renderComments = (comments, online) => {
   return comments
     .map((el) => {
       return `<li class="film-details__comment">
@@ -16,7 +16,9 @@ export const renderComments = (comments) => {
             <p class="film-details__comment-info">
               <span class="film-details__comment-author">${el.user}</span>
               <span class="film-details__comment-day">${getCommentedDate(el.date)}</span>
-              <button class="film-details__comment-delete" data-id = ${el.id}>Delete</button>
+             
+             ${online ? `<button class="film-details__comment-delete" data-id = ${el.id}>Delete</button>` : ``}
+              
             </p>
           </div>
         </li>`;
@@ -25,7 +27,7 @@ export const renderComments = (comments) => {
 };
 
 
-const addFilmDetails = (data, isInHistory, emojiImg, commentsArr, isInWatchList, isFavorite, personalRating, sendingObj) => {
+const addFilmDetails = (data, isInHistory, emojiImg, commentsArr, isInWatchList, isFavorite, personalRating, sendingObj, online) => {
 
   const {
     name,
@@ -47,6 +49,14 @@ const addFilmDetails = (data, isInHistory, emojiImg, commentsArr, isInWatchList,
 
   const getGenresName = (ganresSet) => {
     return [...ganresSet].length > 1 ? `Genres` : `Genre`;
+  };
+
+  const getPlaceInputPlaceHolder = () => {
+    if (!online) {
+      return `You don't have internet - Comments are unable!!!!`;
+    } else {
+      return sendingObj.value ? sendingObj.value : `Select reaction below and write comment here`;
+    }
   };
 
   const renderMarks = () => {
@@ -191,7 +201,7 @@ const addFilmDetails = (data, isInHistory, emojiImg, commentsArr, isInWatchList,
 
         <ul class="film-details__comments-list">
 
-        ${renderComments(comments)}
+        ${renderComments(comments, online)}
         </ul>
 
         <div class="film-details__new-comment">
@@ -200,7 +210,7 @@ const addFilmDetails = (data, isInHistory, emojiImg, commentsArr, isInWatchList,
         </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="${sendingObj.value ? sendingObj.value : `Select reaction below and write comment here`}" name="comment" ${sendingObj.flag ? `disabled` : ``}></textarea>
+            <textarea class="film-details__comment-input" placeholder="${getPlaceInputPlaceHolder()}" name="comment" ${sendingObj.flag || !online ? `disabled` : ``}></textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -242,6 +252,8 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._personalRatingHandler = null;
     this._deleteClickHandler = null;
     this._undoPersonalRatingHandler = null;
+    this._onlineHandler = null;
+    this._offlineHandler = null;
     this._emoji = null;
     this._isInHistory = data.isInHistory;
     this._isInWatchList = data.isInWatchList;
@@ -249,6 +261,7 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._personalRating = data.personalRating;
     this._comments = null;
     this._sendingObj = {flag: false, value: null};
+    this.online = true;
   }
 
   getIsWatched() {
@@ -259,7 +272,7 @@ export default class FilmDetails extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return addFilmDetails(this._data, this._isInHistory, this._emoji, this._comments, this._isInWatchList, this._isFavorite, this._personalRating, this._sendingObj);
+    return addFilmDetails(this._data, this._isInHistory, this._emoji, this._comments, this._isInWatchList, this._isFavorite, this._personalRating, this._sendingObj, this.online);
   }
 
   setSending(data) {
@@ -283,6 +296,8 @@ export default class FilmDetails extends AbstractSmartComponent {
     this.setAddPersonalRatingHandler(this._personalRatingHandler);
     this.setUndoPersonalRatingHandler(this._undoPersonalRatingHandler);
     this.setAddToFavoriteClickHandler(this._addToFavoriteHandler);
+    this.setOnlineHandler(this._onlineHandler);
+    this.setOfflineHandler(this._offlineHandler);
   }
 
   setAlreadyWatchedClickHandler(handler) {
@@ -319,6 +334,16 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._deleteClickHandler = handler;
     const deleteButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
     deleteButtons.forEach((el) => el.addEventListener(`click`, handler));
+  }
+
+  setOnlineHandler(handler) {
+
+    this._onlineHandler = handler;
+    window.addEventListener(`online`, handler);
+  }
+  setOfflineHandler(handler) {
+    this._offlineHandler = handler;
+    window.addEventListener(`offline`, handler);
   }
 
   subscribeOnEvents() {
