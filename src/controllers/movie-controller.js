@@ -54,6 +54,8 @@ export default class MovieController {
     const closeButtonClickHandler = (element) => () => {
       closePopUp(element);
       document.removeEventListener(`keydown`, commentAddingPressHandler);
+      window.removeEventListener(`online`, onlineHandler);
+      window.removeEventListener(`offline`, offlineHandler);
     };
 
     const escPressHandler = (event) => {
@@ -137,6 +139,14 @@ export default class MovieController {
       evt.preventDefault();
       this._onDataChange(this, evt.target.dataset.id, null, this._newFilmDetail);
     };
+    const onlineHandler = () => {
+      this._newFilmDetail.online = true;
+      this._newFilmDetail.rerender();
+    };
+    const offlineHandler = () => {
+      this._newFilmDetail.online = false;
+      this._newFilmDetail.rerender();
+    };
 
     const filmCardClickHandler = (el) => {
       return () => {
@@ -145,6 +155,11 @@ export default class MovieController {
         this._api.getComments(this._movie.id)
           .then((comments) => {
             this._newFilmDetail = new FilmDetails(el);
+            if (window.navigator.onLine) {
+              this._newFilmDetail.online = true;
+            } else {
+              this._newFilmDetail.online = false;
+            }
             this._newFilmDetail._comments = comments;
             this._newFilmDetail.subscribeOnEvents();
             this._newFilmDetail.setAlreadyWatchedClickHandler(alreadyWatchedClickHandler);
@@ -153,7 +168,8 @@ export default class MovieController {
             this._newFilmDetail.setAddPersonalRatingHandler(addPersonalRatingHandler);
             this._newFilmDetail.setUndoPersonalRatingHandler(undoPersonalRatingHandler);
             this._newFilmDetail.setDeleteClickHandler(deleteClickHandler);
-
+            this._newFilmDetail.setOnlineHandler(onlineHandler);
+            this._newFilmDetail.setOfflineHandler(offlineHandler);
             render(this._footerBlock, this._newFilmDetail.getElement(), renderPosition.AFTEREND);
             this._mode = mode.POPUP;
             document.addEventListener(`keydown`, escPressHandler);

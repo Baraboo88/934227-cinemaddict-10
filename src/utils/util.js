@@ -1,6 +1,11 @@
 
 import moment from 'moment';
 
+export const movieOfflineStatus = {
+  INITIAL: `initial`,
+  UPDATED: `updated`
+};
+
 export const monthNames = [
   `January`,
   `February`,
