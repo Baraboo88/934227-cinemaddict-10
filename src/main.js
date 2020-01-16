@@ -18,7 +18,7 @@ const END_POINT = `https://htmlacademy-es-10.appspot.com/cinemaddict`;
 window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`/sw.js`)
     .then(() => {
-      window.title += `[]`;
+      document.title += `[]`;
     }).catch(() => {
     });
 });

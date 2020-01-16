@@ -13,7 +13,7 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.getMovies().then((movies) => {
         movies.forEach((movie) => {
-          this._setStoreItem(movie.id, {state: movieOfflineStatus.INITIAL, data: movie.toRaw()});
+          this._setStoreItem(movie.id, movie.toRaw());
         });
         return Promise.resolve(movies);
       });
