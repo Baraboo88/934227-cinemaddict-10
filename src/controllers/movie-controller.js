@@ -28,6 +28,7 @@ export default class MovieController {
     this._ratingChanging = false;
     this._isFavoriteChanging = false;
     this._isAddToWatchListChanging = false;
+    this._isDeleteChanging = false;
     this._isInHistory = false;
     this._commentValue = null;
   }
@@ -151,6 +152,12 @@ export default class MovieController {
 
     const deleteClickHandler = (evt) => {
       evt.preventDefault();
+      this._isDeleteChanging = true;
+      const comment = this._newFilmDetail._comments.find((el) => el.id === evt.target.dataset.id);
+      if (comment) {
+        comment.isDeleting = true;
+      }
+      this._newFilmDetail.rerender();
       this._onDataChange(this, evt.target.dataset.id, null, this._newFilmDetail);
     };
     const onlineHandler = () => {

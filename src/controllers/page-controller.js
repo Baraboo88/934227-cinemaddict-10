@@ -48,6 +48,15 @@ export default class PageController {
             movieController.render(oldMovie);
             filmDetail._comments = filteredComments;
             filmDetail.rerender();
+          })
+          .catch(() => {
+            if (movieController._isDeleteChanging) {
+              movieController._newFilmDetail._comments.forEach((comment) => {
+                comment.isDeleting = false;
+              });
+              movieController._isDeleteChanging = false;
+              movieController._newFilmDetail.rerender();
+            }
           });
 
       } else if (filmDetail !== null) {
@@ -91,14 +100,14 @@ export default class PageController {
             }
           })
           .catch(() => {
+            if (movieController._isRatingChanging) {
+              movieController.shakePersonalRating();
+            }
             movieController._isRatingChanging = false;
             movieController._isFavoriteChanging = false;
             movieController._isAddToWatchListChanging = false;
             movieController._isAddToWatchListChanging = false;
             movieController._isInHistory = false;
-            if (movieController._isRatingChanging) {
-              movieController.shakePersonalRating();
-            }
           });
       }
 

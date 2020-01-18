@@ -35,7 +35,7 @@ export const renderComments = (comments, online) => {
               <span class="film-details__comment-author">${el.user}</span>
               <span class="film-details__comment-day">${getCommentedDate(el.date)}</span>
              
-             ${online ? `<button class="film-details__comment-delete" data-id = ${el.id}>Delete</button>` : ``}
+             ${online ? `<button class="film-details__comment-delete" data-id = ${el.id}>${el.isDeleting ? `Deleting...` : `Delete`}</button>` : ``}
               
             </p>
           </div>
@@ -368,7 +368,9 @@ export default class FilmDetails extends AbstractSmartComponent {
 
     const emojiClickHandler = (evt) => {
       this._emoji = evt.target.value;
+      const input = this.getElement().querySelector(`.film-details__comment-input`).value;
       this.rerender();
+      this.getElement().querySelector(`.film-details__comment-input`).value = input;
     };
 
     this.getElement().querySelector(`.film-details__emoji-list`).addEventListener(`change`, emojiClickHandler);

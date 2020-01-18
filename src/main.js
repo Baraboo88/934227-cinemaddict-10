@@ -1,13 +1,14 @@
 import Profile from './components/profile';
 import FooterStat from './components/footer-stat';
 
-import {render} from './utils/render';
+import {remove, render} from './utils/render';
 import PageController from './controllers/page-controller';
 import Movies from './models/movies';
 import Stat from './components/stat';
 import API from './api/index';
 import Store from './api/store';
 import Provider from './api/provider';
+import Loading from "./components/loading";
 
 const STORE_PREFIX = `cinnemaddict-localstorage`;
 const STORE_VER = `v1`;
@@ -33,8 +34,12 @@ const movies = new Movies();
 let stat = null;
 let pageController = null;
 const title = document.title;
+const loading = new Loading();
+
+render(mainBlock, loading.getElement());
 
 apiWithProvider.getMovies().then((moviesData) => {
+  remove(loading);
   movies.setMovies(moviesData);
   stat = new Stat(movies);
   pageController = new PageController(mainBlock, movies, stat, apiWithProvider);

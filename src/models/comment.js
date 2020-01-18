@@ -6,6 +6,7 @@ export default class Comment {
     this.comment = data.comment;
     this.date = new Date(data.date);
     this.emoji = `${data.emotion}.png`;
+    this.isDeleting = false;
   }
 
   static parseComment(data) {
