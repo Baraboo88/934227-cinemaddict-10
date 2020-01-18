@@ -3,6 +3,8 @@ import {remove, render, replace} from "../utils/render";
 import FilmDetails from "../components/film-details";
 import {renderPosition} from "../utils/util";
 import Movie from "../models/movie";
+import debounce from 'lodash/debounce';
+const DEBOUNCE_TIMEOUT = 500;
 
 const mode = {
   DEFAULT: `default`,
@@ -91,30 +93,42 @@ export default class MovieController {
       }
     };
 
-    const alreadyWatchedClickHandler = (evt) => {
-      evt.preventDefault();
+    const alreadyWatchedDebounce = debounce(() => {
       const watchedDateNow = this._newFilmDetail.getIsWatched() ? new Date() : this._movie.whatchedDate;
       const newMovie = Movie.clone(movie);
       this._isInHistory = true;
       newMovie.isInHistory = !this._newFilmDetail._isInHistory;
       newMovie.whatchedDate = watchedDateNow;
       this._onDataChange(this, movie, newMovie);
+    }, DEBOUNCE_TIMEOUT);
+
+    const alreadyWatchedClickHandler = (evt) => {
+      evt.preventDefault();
+      alreadyWatchedDebounce();
     };
 
-    const addToWatchlistClickHandler = (evt) => {
-      evt.preventDefault();
+    const addToWatchlistDebounced = debounce(() => {
       this._isAddToWatchListChanging = true;
       const newMovie = Movie.clone(movie);
       newMovie.isInWatchList = !this._newFilmDetail._isInWatchList;
       this._onDataChange(this, movie, newMovie);
+    }, DEBOUNCE_TIMEOUT);
+
+    const addToWatchlistClickHandler = (evt) => {
+      evt.preventDefault();
+      addToWatchlistDebounced();
     };
 
-    const addToFavoriteClickHandler = (evt) => {
-      evt.preventDefault();
+    const addToFavoriteDebounce = debounce(() => {
       const newMovie = Movie.clone(movie);
       this._isFavoriteChanging = true;
       newMovie.isFavorite = !this._newFilmDetail._isFavorite;
       this._onDataChange(this, movie, newMovie);
+    }, DEBOUNCE_TIMEOUT);
+
+    const addToFavoriteClickHandler = (evt) => {
+      evt.preventDefault();
+      addToFavoriteDebounce();
     };
 
     const addPersonalRatingHandler = (evt) => {
@@ -180,27 +194,38 @@ export default class MovieController {
 
       };
     };
-    const movieCardAlreadyWatchedClickHandler = (evt) => {
-      evt.preventDefault();
+
+    const movieCardAlreadyWatchedDebounce = debounce(() => {
       const watchedNow = !movie.isInHistory ? new Date() : movie.whatchedDate;
       const newMovie = Movie.clone(movie);
       newMovie.isInHistory = !movie.isInHistory;
       newMovie.whatchedDate = watchedNow;
       this._onDataChange(this, movie, newMovie);
+    }, DEBOUNCE_TIMEOUT);
+
+    const movieCardAlreadyWatchedClickHandler = (evt) => {
+      evt.preventDefault();
+      movieCardAlreadyWatchedDebounce();
     };
 
-    const movieCardAddToWatchlistClickHandler = (evt) => {
-      evt.preventDefault();
+    const movieCardAddToWatchlistDebounce = debounce(() => {
       const newMovie = Movie.clone(movie);
       newMovie.isInWatchList = !movie.isInWatchList;
       this._onDataChange(this, movie, newMovie);
+    }, DEBOUNCE_TIMEOUT);
+    const movieCardAddToWatchlistClickHandler = (evt) => {
+      evt.preventDefault();
+      movieCardAddToWatchlistDebounce();
     };
 
-    const movieAddToFavoritesClickHandler = (evt) => {
-      evt.preventDefault();
+    const movieAddToFavoritesDebounce = debounce(() => {
       const newMovie = Movie.clone(movie);
       newMovie.isFavorite = !movie.isFavorite;
       this._onDataChange(this, movie, newMovie);
+    }, DEBOUNCE_TIMEOUT);
+    const movieAddToFavoritesClickHandler = (evt) => {
+      evt.preventDefault();
+      movieAddToFavoritesDebounce();
     };
 
     this._newCard.setCardPosterClickHandler(filmCardClickHandler(movie));

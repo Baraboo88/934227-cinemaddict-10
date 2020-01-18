@@ -1,8 +1,26 @@
 import {generateGenres, getFilmDuration} from '../utils/util';
 import AbstractSmartComponent from "./abstract-smart-component";
 import moment from 'moment';
+import numberToWords from 'number-to-words';
 
-const getCommentedDate = (date) => moment(date).format(`YYYY/MM/DD HH:MM`);
+const getCommentedDate = (date) => {
+  const dataNow = new Date();
+  const duration = moment.duration(dataNow - date);
+
+  if (duration.days() > 0) {
+    return `a ${duration.days() === 1 ? `one day` : `${numberToWords.toWords(duration.days())} days`} ago`;
+  } else if (duration.minutes() > 119) {
+    return `a few hours ago`;
+  } else if (duration.minutes() > 59) {
+    return `a hour ago`;
+  } else if (duration.minutes() > 3) {
+    return `a few minutes ago`;
+  } else if (duration.minutes() >= 1) {
+    return `a minute ago`;
+  } else {
+    return `now`;
+  }
+};
 
 export const renderComments = (comments, online) => {
   return comments

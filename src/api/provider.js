@@ -35,6 +35,14 @@ export default class Provider {
     }
   }
 
+  createComment(id, comment) {
+    return this._api.createComment(id, comment);
+  }
+
+  deleteComment(id) {
+    return this._api.deleteComment(id);
+  }
+
   getComments(id) {
     if (this._isOnLine()) {
       return this._api.getComments(id).then((comments) => {
