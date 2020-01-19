@@ -4,7 +4,7 @@ import NoMovies from '../components/no-movies';
 import TopRated from '../components/top-rated';
 import MostCommented from '../components/most-commented';
 import Films from '../components/films';
-import Sort, {sortTypes} from '../components/sort';
+import Sort, {SortTypes} from '../components/sort';
 import MovieController from './movie-controller';
 import NavigationController from './navigation-controller';
 import Movie from "../models/movie";
@@ -32,106 +32,45 @@ export default class PageController {
     this._moviesControllers = [];
     this._filmsToRender = [];
     this._navigation = null;
+    this._sortedType = SortTypes.DEFAULT;
     this._movies = movies;
     this._showFilmsCount = NUMBER_OF_FILMS_START;
     this._filmsListBlock = document.querySelector(`.films-list`);
     this._filmsContainer = document.querySelector(`.films-list__container`);
     this._onDataChange = (movieController, oldMovieData, newMovieData, filmDetail = null) => {
       if (newMovieData === null) {
-        this._api.deleteComment(oldMovieData)
-          .then(() => {
-            const oldMovie = Movie.clone(movieController.getMovieData());
-            const oldMovieComments = [...filmDetail._comments];
-            const filteredComments = oldMovieComments.filter((el) => el.id * 1 !== oldMovieData * 1);
-            oldMovie.comments = filteredComments.map((el) => el.id);
-            this._movies.updateMovie(oldMovie.id, oldMovie);
-            movieController.render(oldMovie);
-            filmDetail._comments = filteredComments;
-            filmDetail.rerender();
-          })
-          .catch(() => {
-            if (movieController._isDeleteChanging) {
-              movieController._newFilmDetail._comments.forEach((comment) => {
-                comment.isDeleting = false;
-              });
-              movieController._isDeleteChanging = false;
-              movieController._newFilmDetail.rerender();
-            }
-          });
-
+        this._deleteComment(movieController, oldMovieData, newMovieData, filmDetail);
       } else if (filmDetail !== null) {
-        this._api.createComment(oldMovieData.id, newMovieData).then((response) => {
-          const newMovie = Movie.parseMovie(response.movie);
-          const newComments = Comment.parseComments(response.comments);
-          const isSuccess = this._movies.updateMovie(oldMovieData.id, newMovie);
-          if (isSuccess) {
-            filmDetail._comments = newComments;
-            filmDetail.setSending({flag: false, value: null});
-            movieController.render(newMovie);
-          }
-        })
-          .catch(() => {
-            movieController.shakeComment();
-          });
+        this._createComment(movieController, oldMovieData, newMovieData, filmDetail);
       } else {
-        this._api.updateMovie(oldMovieData.id, newMovieData)
-          .then((updatedMovie) => {
-            const isSuccess = this._movies.updateMovie(oldMovieData.id, updatedMovie);
-            if (movieController._isRatingChanging) {
-              movieController._isRatingChanging = false;
-              movieController._newFilmDetail._personalRating = updatedMovie.personalRating;
-              movieController._newFilmDetail.rerender();
-            } else if (movieController._isFavoriteChanging) {
-              movieController._isFavoriteChanging = false;
-              movieController._newFilmDetail._isFavorite = updatedMovie.isFavorite;
-              movieController._newFilmDetail.rerender();
-            } else if (movieController._isAddToWatchListChanging) {
-              movieController._isAddToWatchListChanging = false;
-              movieController._newFilmDetail._isInWatchList = updatedMovie.isInWatchList;
-              movieController._newFilmDetail.rerender();
-            } else if (movieController._isInHistory) {
-              movieController._isInHistory = false;
-              movieController._newFilmDetail._isInHistory = updatedMovie.isInHistory;
-              movieController._newFilmDetail.rerender();
-            }
-            if (isSuccess) {
-              this._navigation.rerender();
-              movieController.render(newMovieData);
-            }
-          })
-          .catch(() => {
-            if (movieController._isRatingChanging) {
-              movieController.shakePersonalRating();
-            }
-            movieController._isRatingChanging = false;
-            movieController._isFavoriteChanging = false;
-            movieController._isAddToWatchListChanging = false;
-            movieController._isAddToWatchListChanging = false;
-            movieController._isInHistory = false;
-          });
+        this._updateMovie(movieController, oldMovieData, newMovieData);
       }
 
     };
-
     this._onViewChange = () => {
       this._moviesControllers.forEach((el) => {
         el.setDefaultView();
       });
     };
     this._onFilterChange = () => {
-      this.renderFilms(this._movies.getMovies());
+      this._sortMovies(this._sortedType);
     };
 
     this._sortClickHandler = (sortType) => {
+      this._sortedType = sortType;
+      this._sortMovies(sortType);
+    };
+
+    this._sortMovies = (sortType) => {
       let sortedFilms = [...this._movies.getMovies()];
       switch (sortType) {
-        case sortTypes.DEFAULT:
+        case SortTypes.DEFAULT:
           this.renderFilms(sortedFilms);
           break;
-        case sortTypes.BY_DATE:
+        case SortTypes.BY_DATE:
           this.renderFilms(sortedFilms.sort((a, b) => b.releaseDate - a.releaseDate));
           break;
-        case sortTypes.BY_RATING:
+        case SortTypes.BY_RATING:
           this.renderFilms(sortedFilms.sort((a, b) => b.filmMark - a.filmMark));
           break;
       }
@@ -155,6 +94,83 @@ export default class PageController {
     };
 
     this._movies.setFilterClickHandler(this._onFilterChange);
+  }
+
+  _deleteComment(movieController, oldMovieData, newMovieData, filmDetail) {
+    this._api.deleteComment(oldMovieData)
+      .then(() => {
+        const oldMovie = Movie.clone(movieController.getMovieData());
+        const oldMovieComments = [...filmDetail._comments];
+        const filteredComments = oldMovieComments.filter((el) => el.id * 1 !== oldMovieData * 1);
+        oldMovie.comments = filteredComments.map((el) => el.id);
+        this._movies.updateMovie(oldMovie.id, oldMovie);
+        movieController.render(oldMovie);
+        filmDetail._comments = filteredComments;
+        filmDetail.rerender();
+      })
+      .catch(() => {
+        if (movieController._isDeleteChanging) {
+          movieController._newFilmDetail._comments.forEach((comment) => {
+            comment.isDeleting = false;
+          });
+          movieController._isDeleteChanging = false;
+          movieController._newFilmDetail.rerender();
+        }
+      });
+  }
+
+  _createComment(movieController, oldMovieData, newMovieData, filmDetail) {
+    this._api.createComment(oldMovieData.id, newMovieData).then((response) => {
+      const newMovie = Movie.parseMovie(response.movie);
+      const newComments = Comment.parseComments(response.comments);
+      const isSuccess = this._movies.updateMovie(oldMovieData.id, newMovie);
+      if (isSuccess) {
+        filmDetail._comments = newComments;
+        filmDetail.setSending({flag: false, value: null});
+        movieController.render(newMovie);
+      }
+    })
+      .catch(() => {
+        filmDetail.shakeComment();
+      });
+  }
+
+  _updateMovie(movieController, oldMovieData, newMovieData) {
+    this._api.updateMovie(oldMovieData.id, newMovieData)
+      .then((updatedMovie) => {
+        const isSuccess = this._movies.updateMovie(oldMovieData.id, updatedMovie);
+        if (movieController._isRatingChanging) {
+          movieController._isRatingChanging = false;
+          movieController._newFilmDetail._personalRating = updatedMovie.personalRating;
+          movieController._newFilmDetail.rerender();
+        } else if (movieController._isFavoriteChanging) {
+          movieController._isFavoriteChanging = false;
+          movieController._newFilmDetail._isFavorite = updatedMovie.isFavorite;
+          movieController._newFilmDetail.rerender();
+        } else if (movieController._isAddToWatchListChanging) {
+          movieController._isAddToWatchListChanging = false;
+          movieController._newFilmDetail._isInWatchList = updatedMovie.isInWatchList;
+          movieController._newFilmDetail.rerender();
+        } else if (movieController._isInHistory) {
+          movieController._isInHistory = false;
+          movieController._newFilmDetail._isInHistory = updatedMovie.isInHistory;
+          movieController._newFilmDetail.rerender();
+        }
+        if (isSuccess) {
+          this._navigation.rerender();
+          movieController.render(newMovieData);
+        }
+      })
+      .catch(() => {
+        if (movieController._isRatingChanging) {
+          movieController._newFilmDetail.shakePersonalRating();
+        }
+        movieController._isRatingChanging = false;
+        movieController._isFavoriteChanging = false;
+        movieController._isAddToWatchListChanging = false;
+        movieController._isAddToWatchListChanging = false;
+        movieController._isInHistory = false;
+      });
   }
 
   render() {
@@ -195,14 +211,15 @@ export default class PageController {
             this._api
         )
     );
-    const getTwoTopElOfArr = (arr, comparator) => arr.sort(comparator).slice(0, 2);
-    const getTwoTopRates = (arr) => getTwoTopElOfArr(arr, (a, b) => b.filmMark - a.filmMark);
+    const getTwoTopElements = (arr, comparator) => arr.sort(comparator).slice(0, 2);
+    const getTwoTopRates = (arr) => getTwoTopElements(arr, (a, b) => b.filmMark - a.filmMark);
     const getTwoTopCommented = (arr) =>
-      getTwoTopElOfArr(arr, (a, b) => b.comments.length - a.comments.length);
+      getTwoTopElements(arr, (a, b) => b.comments.length - a.comments.length);
     const topRatedFilms = getTwoTopRates([...filmsToRender]);
     const topCommentedFilms = getTwoTopCommented([...filmsToRender]);
     while (document.querySelector(`.films-list--extra`)) {
-      document.querySelector(`.films-list--extra`).parentElement.removeChild(document.querySelector(`.films-list--extra`));
+      const filmsListExtra = document.querySelector(`.films-list--extra`);
+      filmsListExtra.parentElement.removeChild(filmsListExtra);
     }
     if (topRatedFilms.length > 0 && topRatedFilms[0].filmMark !== 0) {
       render(this._films.getElement(), new TopRated().getElement());

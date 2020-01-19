@@ -2,10 +2,12 @@ import {getFilmDuration} from '../utils/util';
 import {generateGenres} from '../utils/util';
 import AbstractComponent from "./abstract-component";
 
+const MAX_DESC_LENGTH = 140;
+
 const addFilmCard = (card) => {
   const {name, filmMark, releaseDate, runTime, genres, description, poster, comments, isFavorite, isInWatchList, isInHistory} = card;
 
-  const getDescription = () => description.length > 140 ? `${description.slice(0, 140)} ...` : description;
+  const getDescription = () => description.length > MAX_DESC_LENGTH ? `${description.slice(0, MAX_DESC_LENGTH)} ...` : description;
 
   const isInWatchlistActive = isInWatchList ? `film-card__controls-item--active` : ``;
   const isInFavoriteActive = isFavorite ? `film-card__controls-item--active` : ``;

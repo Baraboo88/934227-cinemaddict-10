@@ -1,7 +1,7 @@
 import Movie from '../models/movie';
 import Comment from "../models/comment";
 
-const methods = {
+const Methods = {
   GET: `GET`,
   POST: `POST`,
   PUT: `PUT`,
@@ -31,7 +31,7 @@ export default class API {
   updateMovie(id, data) {
     return this._load({
       url: `movies/${id}`,
-      method: methods.PUT,
+      method: Methods.PUT,
       body: JSON.stringify(data.toRaw()),
       headers: new Headers({'Content-Type': `application/json`})
     })
@@ -39,7 +39,7 @@ export default class API {
     .then(Movie.parseMovie);
   }
 
-  _load({url, method = methods.GET, body = null, headers = new Headers()}) {
+  _load({url, method = Methods.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})
@@ -56,13 +56,13 @@ export default class API {
   }
 
   deleteComment(id) {
-    return this._load({url: `comments/${id}`, method: methods.DELETE});
+    return this._load({url: `comments/${id}`, method: Methods.DELETE});
   }
 
   createComment(id, comment) {
     return this._load({
       url: `comments/${id}`,
-      method: methods.POST,
+      method: Methods.POST,
       body: JSON.stringify(comment),
       headers: new Headers({'Content-Type': `application/json`})
     })
@@ -72,7 +72,7 @@ export default class API {
   sync(data) {
     return this._load({
       url: `movies/sync`,
-      method: methods.POST,
+      method: Methods.POST,
       body: JSON.stringify(data),
       headers: new Headers({'Content-Type': `application/json`})
     }).then((response) => response.json());

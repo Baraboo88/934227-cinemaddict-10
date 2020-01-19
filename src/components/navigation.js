@@ -28,13 +28,15 @@ export default class Navigation extends AbstractComponent {
   setFiltersClickHandler(handler) {
     const filterClickHandler = (evt) => {
       evt.preventDefault();
-      const activeFilter = this.getElement().querySelector(`.main-navigation__item--active`);
-      activeFilter.classList.remove(`main-navigation__item--active`);
-      const clickedFilter = evt.target;
-      clickedFilter.classList.add(`main-navigation__item--active`);
-      const hrefArr = evt.target.href.split(`/`);
-      const filterName = hrefArr[hrefArr.length - 1].slice(1);
-      handler(filterName);
+      if (evt.target.classList.contains(`main-navigation__item`)) {
+        const activeFilter = this.getElement().querySelector(`.main-navigation__item--active`);
+        activeFilter.classList.remove(`main-navigation__item--active`);
+        const clickedFilter = evt.target;
+        clickedFilter.classList.add(`main-navigation__item--active`);
+        const hrefArr = evt.target.href.split(`/`);
+        const filterName = hrefArr[hrefArr.length - 1].slice(1);
+        handler(filterName);
+      }
     };
 
     this.getElement().addEventListener(`click`, filterClickHandler);

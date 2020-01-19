@@ -3,9 +3,11 @@ import AbstractSmartComponent from "./abstract-smart-component";
 import moment from 'moment';
 import numberToWords from 'number-to-words';
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 const getCommentedDate = (date) => {
-  const dataNow = new Date();
-  const duration = moment.duration(dataNow - date);
+  const dateNow = new Date();
+  const duration = moment.duration(Number(dateNow) - date);
 
   if (duration.days() > 0) {
     return `a ${duration.days() === 1 ? `one day` : `${numberToWords.toWords(duration.days())} days`} ago`;
@@ -280,6 +282,7 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._comments = null;
     this._sendingObj = {flag: false, value: null};
     this.online = true;
+    this._commentValue = null;
   }
 
   getIsWatched() {
@@ -375,4 +378,27 @@ export default class FilmDetails extends AbstractSmartComponent {
 
     this.getElement().querySelector(`.film-details__emoji-list`).addEventListener(`change`, emojiClickHandler);
   }
+
+  shakeComment() {
+    this.getElement().querySelector(`.film-details__comment-input`).style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this.getElement().querySelector(`.film-details__comment-input`).style.border = `2px solid red`;
+    setTimeout(() => {
+      this.getElement().querySelector(`.film-details__comment-input`).style.animation = ``;
+      this.setSending({flag: false, value: this._commentValue});
+
+      this.getElement().querySelector(`.film-details__comment-input`).style.border = `none`;
+      this.getElement().querySelector(`.film-details__comment-input`).value = this._commentValue;
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  shakePersonalRating() {
+    this.getElement().querySelector(`.film-details__user-rating-score`).style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this.getElement().querySelector(`.film-details__user-rating-score`).style.border = `2px solid red`;
+    setTimeout(() => {
+      this.getElement().querySelector(`.film-details__user-rating-score`).style.animation = ``;
+      this.rerender();
+      this.getElement().querySelector(`.film-details__user-rating-score`).style.border = `none`;
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
 }

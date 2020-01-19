@@ -1,9 +1,9 @@
-import {filterTypes} from '../utils/util';
+import {FilterTypes} from '../utils/util';
 
 export default class Movies {
   constructor() {
     this._movies = [];
-    this._activeFilterType = filterTypes.ALL;
+    this._activeFilterType = FilterTypes.ALL;
     this._dataChangeHandler = null;
     this._changeFilterHandler = null;
   }
@@ -26,11 +26,11 @@ export default class Movies {
 
   getMovieByFilter() {
     switch (this._activeFilterType) {
-      case filterTypes.FAVORITES:
+      case FilterTypes.FAVORITES:
         return this._movies.filter((el) => el.isFavorite);
-      case filterTypes.HISTORY:
+      case FilterTypes.HISTORY:
         return this._movies.filter((el) => el.isInHistory);
-      case filterTypes.WHATCHLIST:
+      case FilterTypes.WHATCHLIST:
         return this._movies.filter((el) => el.isInWatchList);
       default:
         return this._movies;

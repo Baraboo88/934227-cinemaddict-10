@@ -1,13 +1,16 @@
 import AbstractComponent from "./abstract-component";
 
+const MOVIE_BUFF_THRESHOLD = 21;
+const MOVIE_FAN_THRESHOLD = 10;
+const MOVIE_NOVICE_THRESHOLD = 0;
 
 const addProfileBlock = (number) => {
   const getNickName = (num) => {
-    if (num > 21) {
+    if (num > MOVIE_BUFF_THRESHOLD) {
       return `Movie Buff`;
-    } else if (num > 10) {
+    } else if (num > MOVIE_FAN_THRESHOLD) {
       return `Fan`;
-    } else if (num > 0) {
+    } else if (num > MOVIE_NOVICE_THRESHOLD) {
       return `Novice`;
     } else {
       return ``;

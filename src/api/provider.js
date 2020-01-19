@@ -1,6 +1,6 @@
 import Movie from "../models/movie";
 import Comment from "../models/comment";
-import {movieOfflineStatus} from "../utils/util";
+import {MovieOfflineStatus} from "../utils/util";
 
 export default class Provider {
   constructor(api, store) {
@@ -29,7 +29,7 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.updateMovie(id, data);
     } else {
-      this._setStoreItem(id, data, movieOfflineStatus.UPDATED);
+      this._setStoreItem(id, data, MovieOfflineStatus.UPDATED);
       this._isSunchronized = false;
       return Promise.resolve(data);
     }
@@ -47,8 +47,9 @@ export default class Provider {
     if (this._isOnLine()) {
       return this._api.getComments(id).then((comments) => {
         const data = this._store.getAll();
-        const storeMovie = Object.values(data).map((movieId) => movieId.data).find((dataItem) => dataItem.id === id);
+        let storeMovie = Object.values(data).find((movieId) => movieId.data.id === id);
         if (storeMovie) {
+          storeMovie = storeMovie.data;
           storeMovie.comments = comments;
           this._setStoreItem(storeMovie.id, storeMovie);
         }
@@ -56,15 +57,15 @@ export default class Provider {
       });
     } else {
       const data = this._store.getAll();
-      const storeMovie = Object.values(data).map((movieId) => movieId.data).find((dataItem) => dataItem.id === id);
+      const storeMovie = Object.values(data).find((movieId) => movieId.data.id === id);
       if (storeMovie) {
-        return Promise.resolve(Comment.parseComments(storeMovie.comments));
+        return Promise.resolve(Comment.parseComments(storeMovie.data.comments));
       }
     }
     return Promise.resolve(Comment.parseComments([]));
   }
 
-  _setStoreItem(key, data, state = movieOfflineStatus.INITIAL) {
+  _setStoreItem(key, data, state = MovieOfflineStatus.INITIAL) {
 
     this._store.setItem(key, {
       state,
@@ -79,7 +80,7 @@ export default class Provider {
   sync() {
     const data = this._store.getAll();
     const items = Object.values(data).filter((dataItem) => {
-      return dataItem.state === movieOfflineStatus.UPDATED;
+      return dataItem.state === MovieOfflineStatus.UPDATED;
     }).map((item) => {
       return item.data;
     });

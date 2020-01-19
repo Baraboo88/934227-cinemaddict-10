@@ -1,7 +1,7 @@
 import FilmsCard from "../components/film-card";
 import {remove, render, replace} from "../utils/render";
 import FilmDetails from "../components/film-details";
-import {renderPosition} from "../utils/util";
+import {RenderPosition} from "../utils/util";
 import Movie from "../models/movie";
 import debounce from 'lodash/debounce';
 const DEBOUNCE_TIMEOUT = 500;
@@ -10,8 +10,6 @@ const mode = {
   DEFAULT: `default`,
   POPUP: `popup`
 };
-
-const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export default class MovieController {
 
@@ -25,16 +23,16 @@ export default class MovieController {
     this._mode = mode.DEFAULT;
     this._newFilmDetail = null;
     this._movie = null;
-    this._ratingChanging = false;
+    this._isRatingChanging = false;
     this._isFavoriteChanging = false;
     this._isAddToWatchListChanging = false;
     this._isDeleteChanging = false;
     this._isInHistory = false;
-    this._commentValue = null;
   }
 
   setDefaultView() {
     if (this._mode !== mode.DEFAULT) {
+      remove(this._newFilmDetail);
       this._newFilmDetail.removeElement();
       this._mode = mode.DEFAULT;
     }
@@ -87,7 +85,7 @@ export default class MovieController {
             emotion: image.split(`.`).shift()
           };
           this._newFilmDetail.setSending({flag: true, value: input});
-          this._commentValue = input;
+          this._newFilmDetail._commentValue = input;
           this._onDataChange(this, this._movie, commentObj, this._newFilmDetail);
         }
 
@@ -191,7 +189,7 @@ export default class MovieController {
             this._newFilmDetail.setDeleteClickHandler(deleteClickHandler);
             this._newFilmDetail.setOnlineHandler(onlineHandler);
             this._newFilmDetail.setOfflineHandler(offlineHandler);
-            render(this._footerBlock, this._newFilmDetail.getElement(), renderPosition.AFTEREND);
+            render(this._footerBlock, this._newFilmDetail.getElement(), RenderPosition.AFTEREND);
             this._mode = mode.POPUP;
             document.addEventListener(`keydown`, escPressHandler);
             document.addEventListener(`keydown`, commentAddingPressHandler);
@@ -248,28 +246,6 @@ export default class MovieController {
     } else {
       render(this._container, this._newCard.getElement());
     }
-  }
-
-  shakeComment() {
-    this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).style.border = `2px solid red`;
-    setTimeout(() => {
-      this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).style.animation = ``;
-      this._newFilmDetail.setSending({flag: false, value: this._commentValue});
-
-      this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).style.border = `none`;
-      this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).value = this._commentValue;
-    }, SHAKE_ANIMATION_TIMEOUT);
-  }
-
-  shakePersonalRating() {
-    this._newFilmDetail.getElement().querySelector(`.film-details__user-rating-score`).style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._newFilmDetail.getElement().querySelector(`.film-details__user-rating-score`).style.border = `2px solid red`;
-    setTimeout(() => {
-      this._newFilmDetail.getElement().querySelector(`.film-details__user-rating-score`).style.animation = ``;
-      this._newFilmDetail.rerender();
-      this._newFilmDetail.getElement().querySelector(`.film-details__user-rating-score`).style.border = `none`;
-    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
 

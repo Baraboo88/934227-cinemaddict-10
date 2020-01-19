@@ -1,12 +1,12 @@
-import {renderPosition} from "./util";
+import {RenderPosition} from "./util";
 
-export const render = (container, element, place = renderPosition.BEFOREEND) => {
+export const render = (container, element, place = RenderPosition.BEFOREEND) => {
   switch (place) {
-    case renderPosition.BEFOREEND:
+    case RenderPosition.BEFOREEND:
       container.append(element);
       break;
-    case renderPosition.AFTEREND:
-      container.insertAdjacentElement(renderPosition.AFTEREND, element);
+    case RenderPosition.AFTEREND:
+      container.insertAdjacentElement(RenderPosition.AFTEREND, element);
       break;
   }
 };
