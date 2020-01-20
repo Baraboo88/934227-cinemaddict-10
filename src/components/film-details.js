@@ -10,7 +10,7 @@ const TimeThreshold = {
   A_FEW_MINUTES_AGO: 3,
   A_HOUR_AGO: 59,
   A_FEW_HOURS_AGO: 119
-}
+};
 
 const getCommentedDate = (date) => {
   const dateNow = new Date();

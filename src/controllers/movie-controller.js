@@ -41,7 +41,7 @@ export default class MovieController {
     }
   }
 
-   commentAddingPressHandler(event) {
+  commentAddingPressHandler(event) {
     const key = event.key;
     if ((event.ctrlKey || event.metaKey) && key === `Enter`) {
       const input = this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).value;
@@ -59,7 +59,7 @@ export default class MovieController {
       }
 
     }
-  };
+  }
   closeButtonClickHandler(element) {
     return () => {
       this.closePopUp(element);
@@ -77,7 +77,7 @@ export default class MovieController {
       document.removeEventListener(`keydown`, this.escPressHandler);
       document.removeEventListener(`keydown`, this.commentAddingPressHandler);
     }
-  };
+  }
 
   closePopUp(element) {
     remove(element);
@@ -90,11 +90,11 @@ export default class MovieController {
   onlineHandler() {
     this._newFilmDetail.online = true;
     this._newFilmDetail.rerender();
-  };
+  }
   offlineHandler() {
     this._newFilmDetail.online = false;
     this._newFilmDetail.rerender();
-  };
+  }
 
   render(movie) {
     this._movie = movie;
@@ -102,7 +102,7 @@ export default class MovieController {
 
     this._newCard = new FilmsCard(movie);
 
-     const alreadyWatchedDebounce = debounce(() => {
+    const alreadyWatchedDebounce = debounce(() => {
       const watchedDateNow = this._newFilmDetail.getIsWatched() ? new Date() : this._movie.whatchedDate;
       const newMovie = Movie.clone(movie);
       this._isInHistory = true;
