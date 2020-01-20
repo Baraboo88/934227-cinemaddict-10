@@ -6,7 +6,7 @@ import Movie from "../models/movie";
 import debounce from 'lodash/debounce';
 const DEBOUNCE_TIMEOUT = 500;
 
-const mode = {
+const Mode = {
   DEFAULT: `default`,
   POPUP: `popup`
 };
@@ -20,7 +20,7 @@ export default class MovieController {
     this._api = api;
     this._newCard = null;
     this._onViewChange = onViewChange;
-    this._mode = mode.DEFAULT;
+    this._mode = Mode.DEFAULT;
     this._newFilmDetail = null;
     this._movie = null;
     this._isRatingChanging = false;
@@ -33,10 +33,10 @@ export default class MovieController {
   }
 
   setDefaultView() {
-    if (this._mode !== mode.DEFAULT) {
+    if (this._mode !== Mode.DEFAULT) {
       remove(this._newFilmDetail);
       this._newFilmDetail.removeElement();
-      this._mode = mode.DEFAULT;
+      this._mode = Mode.DEFAULT;
       document.removeEventListener(`keydown`, this.commentAddingPressHandler);
     }
   }
@@ -71,7 +71,6 @@ export default class MovieController {
   }
 
   escPressHandler(event) {
-    console.log('hello')
     const isEscKey = event.key === `Escape` || event.key === `Esc`;
     if (isEscKey) {
       this.closePopUp(this._newFilmDetail);
@@ -193,7 +192,7 @@ export default class MovieController {
             this._newFilmDetail.setOnlineHandler(this.onlineHandler);
             this._newFilmDetail.setOfflineHandler(this.offlineHandler);
             render(this._footerBlock, this._newFilmDetail.getElement(), RenderPosition.AFTEREND);
-            this._mode = mode.POPUP;
+            this._mode = Mode.POPUP;
             document.addEventListener(`keydown`, this.escPressHandler);
             document.addEventListener(`keydown`, this.commentAddingPressHandler);
 

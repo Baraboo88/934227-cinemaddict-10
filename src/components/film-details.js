@@ -5,19 +5,26 @@ import numberToWords from 'number-to-words';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
+const TimeThreshold = {
+  A_MINUTE_AGO: 1,
+  A_FEW_MINUTES_AGO: 3,
+  A_HOUR_AGO: 59,
+  A_FEW_HOURS_AGO: 119
+}
+
 const getCommentedDate = (date) => {
   const dateNow = new Date();
   const duration = moment.duration(Number(dateNow) - date);
 
   if (duration.days() > 0) {
     return `a ${duration.days() === 1 ? `one day` : `${numberToWords.toWords(duration.days())} days`} ago`;
-  } else if (duration.minutes() > 119) {
+  } else if (duration.minutes() > TimeThreshold.A_FEW_HOURS_AGO) {
     return `a few hours ago`;
-  } else if (duration.minutes() > 59) {
+  } else if (duration.minutes() > TimeThreshold.A_HOUR_AGO) {
     return `a hour ago`;
-  } else if (duration.minutes() > 3) {
+  } else if (duration.minutes() > TimeThreshold.A_FEW_MINUTES_AGO) {
     return `a few minutes ago`;
-  } else if (duration.minutes() >= 1) {
+  } else if (duration.minutes() >= TimeThreshold.A_MINUTE_AGO) {
     return `a minute ago`;
   } else {
     return `now`;
