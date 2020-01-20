@@ -6,7 +6,7 @@ export const MovieOfflineStatus = {
   UPDATED: `updated`
 };
 
-export const FilterTypes = {
+export const FilterType = {
   ALL: `all`,
   WHATCHLIST: `watchlist`,
   HISTORY: `history`,

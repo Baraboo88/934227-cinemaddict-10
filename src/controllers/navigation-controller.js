@@ -1,14 +1,14 @@
 import Navigation from '../components/navigation';
 import {replace, render} from '../utils/render';
 import {generateFilters} from '../utils/filters';
-import {FilterTypes} from '../utils/util';
+import {FilterType} from '../utils/util';
 
 export default class NavigationController {
   constructor(container, model, pageController, stat) {
     this._container = container;
     this._model = model;
     this._navigation = null;
-    this._activeFilter = FilterTypes.ALL;
+    this._activeFilter = FilterType.ALL;
     this._onDataChange = () => {
       this.rerender();
     };

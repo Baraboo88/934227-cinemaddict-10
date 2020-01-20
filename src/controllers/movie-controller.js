@@ -28,6 +28,8 @@ export default class MovieController {
     this._isAddToWatchListChanging = false;
     this._isDeleteChanging = false;
     this._isInHistory = false;
+    this.commentAddingPressHandler = this.commentAddingPressHandler.bind(this);
+    this.escPressHandler = this.escPressHandler.bind(this);
   }
 
   setDefaultView() {
@@ -35,12 +37,65 @@ export default class MovieController {
       remove(this._newFilmDetail);
       this._newFilmDetail.removeElement();
       this._mode = mode.DEFAULT;
+      document.removeEventListener(`keydown`, this.commentAddingPressHandler);
     }
+  }
+
+   commentAddingPressHandler(event) {
+    const key = event.key;
+    if ((event.ctrlKey || event.metaKey) && key === `Enter`) {
+      const input = this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).value;
+      const imageAddress = this._newFilmDetail.getElement().querySelector(`.film-details__add-emoji-img`).src.split(`/`);
+      const image = imageAddress[imageAddress.length - 1];
+      if (input.trim() !== ``) {
+        const commentObj = {
+          comment: input,
+          date: new Date().toISOString(),
+          emotion: image.split(`.`).shift()
+        };
+        this._newFilmDetail.setSending({flag: true, value: input});
+        this._newFilmDetail._commentValue = input;
+        this._onDataChange(this, this._movie, commentObj, this._newFilmDetail);
+      }
+
+    }
+  };
+  closeButtonClickHandler(element) {
+    return () => {
+      this.closePopUp(element);
+      document.removeEventListener(`keydown`, this.commentAddingPressHandler);
+      document.removeEventListener(`keydown`, this.escPressHandler);
+      window.removeEventListener(`online`, this.onlineHandler);
+      window.removeEventListener(`offline`, this.offlineHandler);
+    };
+  }
+
+  escPressHandler(event) {
+    console.log('hello')
+    const isEscKey = event.key === `Escape` || event.key === `Esc`;
+    if (isEscKey) {
+      this.closePopUp(this._newFilmDetail);
+      document.removeEventListener(`keydown`, this.escPressHandler);
+      document.removeEventListener(`keydown`, this.commentAddingPressHandler);
+    }
+  };
+
+  closePopUp(element) {
+    remove(element);
   }
 
   getMovieData() {
     return this._movie;
   }
+
+  onlineHandler() {
+    this._newFilmDetail.online = true;
+    this._newFilmDetail.rerender();
+  };
+  offlineHandler() {
+    this._newFilmDetail.online = false;
+    this._newFilmDetail.rerender();
+  };
 
   render(movie) {
     this._movie = movie;
@@ -48,51 +103,7 @@ export default class MovieController {
 
     this._newCard = new FilmsCard(movie);
 
-    const closePopUp = (element) => {
-      remove(element);
-    };
-
-    const closeButtonClickHandler = (element) => () => {
-      closePopUp(element);
-      document.removeEventListener(`keydown`, commentAddingPressHandler);
-      window.removeEventListener(`online`, onlineHandler);
-      window.removeEventListener(`offline`, offlineHandler);
-    };
-
-    const escPressHandler = (event) => {
-
-      const isEscKey = event.key === `Escape` || event.key === `Esc`;
-      if (isEscKey) {
-
-        closePopUp(this._newFilmDetail);
-        document.removeEventListener(`keydown`, escPressHandler);
-        document.removeEventListener(`keydown`, commentAddingPressHandler);
-      }
-
-    };
-
-    const commentAddingPressHandler = (event) => {
-      const key = event.key;
-
-      if ((event.ctrlKey || event.metaKey) && key === `Enter`) {
-        const input = this._newFilmDetail.getElement().querySelector(`.film-details__comment-input`).value;
-        const imageAddress = this._newFilmDetail.getElement().querySelector(`.film-details__add-emoji-img`).src.split(`/`);
-        const image = imageAddress[imageAddress.length - 1];
-        if (input.trim() !== ``) {
-          const commentObj = {
-            comment: input,
-            date: new Date().toISOString(),
-            emotion: image.split(`.`).shift()
-          };
-          this._newFilmDetail.setSending({flag: true, value: input});
-          this._newFilmDetail._commentValue = input;
-          this._onDataChange(this, this._movie, commentObj, this._newFilmDetail);
-        }
-
-      }
-    };
-
-    const alreadyWatchedDebounce = debounce(() => {
+     const alreadyWatchedDebounce = debounce(() => {
       const watchedDateNow = this._newFilmDetail.getIsWatched() ? new Date() : this._movie.whatchedDate;
       const newMovie = Movie.clone(movie);
       this._isInHistory = true;
@@ -158,14 +169,6 @@ export default class MovieController {
       this._newFilmDetail.rerender();
       this._onDataChange(this, evt.target.dataset.id, null, this._newFilmDetail);
     };
-    const onlineHandler = () => {
-      this._newFilmDetail.online = true;
-      this._newFilmDetail.rerender();
-    };
-    const offlineHandler = () => {
-      this._newFilmDetail.online = false;
-      this._newFilmDetail.rerender();
-    };
 
     const filmCardClickHandler = (el) => {
       return () => {
@@ -187,14 +190,14 @@ export default class MovieController {
             this._newFilmDetail.setAddPersonalRatingHandler(addPersonalRatingHandler);
             this._newFilmDetail.setUndoPersonalRatingHandler(undoPersonalRatingHandler);
             this._newFilmDetail.setDeleteClickHandler(deleteClickHandler);
-            this._newFilmDetail.setOnlineHandler(onlineHandler);
-            this._newFilmDetail.setOfflineHandler(offlineHandler);
+            this._newFilmDetail.setOnlineHandler(this.onlineHandler);
+            this._newFilmDetail.setOfflineHandler(this.offlineHandler);
             render(this._footerBlock, this._newFilmDetail.getElement(), RenderPosition.AFTEREND);
             this._mode = mode.POPUP;
-            document.addEventListener(`keydown`, escPressHandler);
-            document.addEventListener(`keydown`, commentAddingPressHandler);
+            document.addEventListener(`keydown`, this.escPressHandler);
+            document.addEventListener(`keydown`, this.commentAddingPressHandler);
 
-            this._newFilmDetail.setCloseButtonClickHandler(closeButtonClickHandler(this._newFilmDetail));
+            this._newFilmDetail.setCloseButtonClickHandler(this.closeButtonClickHandler(this._newFilmDetail));
           });
 
       };

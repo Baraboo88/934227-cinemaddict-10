@@ -1,6 +1,6 @@
 import AbstractComponent from './abstract-component';
 
-export const SortTypes = {
+export const SortType = {
   DEFAULT: `default`,
   BY_DATE: `by-date`,
   BY_RATING: `by-rating`
@@ -8,16 +8,16 @@ export const SortTypes = {
 
 const addSortBlock = () => {
   return `<ul class="sort">
-    <li><a data-sort-type = ${SortTypes.DEFAULT} href="#" class="sort__button sort__button--active">Sort by default</a></li>
-    <li><a data-sort-type = ${SortTypes.BY_DATE} href="#" class="sort__button">Sort by date</a></li>
-    <li><a data-sort-type = ${SortTypes.BY_RATING} href="#" class="sort__button">Sort by rating</a></li>
+    <li><a data-sort-type = ${SortType.DEFAULT} href="#" class="sort__button sort__button--active">Sort by default</a></li>
+    <li><a data-sort-type = ${SortType.BY_DATE} href="#" class="sort__button">Sort by date</a></li>
+    <li><a data-sort-type = ${SortType.BY_RATING} href="#" class="sort__button">Sort by rating</a></li>
   </ul>`;
 };
 
 export default class Sort extends AbstractComponent {
   constructor() {
     super();
-    this._sortType = SortTypes.DEFAULT;
+    this._sortType = SortType.DEFAULT;
     this._activeLink = this.getElement().querySelector(`.sort__button--active`);
   }
   getTemplate() {

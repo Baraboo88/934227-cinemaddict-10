@@ -33,8 +33,8 @@ export default class Navigation extends AbstractComponent {
         activeFilter.classList.remove(`main-navigation__item--active`);
         const clickedFilter = evt.target;
         clickedFilter.classList.add(`main-navigation__item--active`);
-        const hrefArr = evt.target.href.split(`/`);
-        const filterName = hrefArr[hrefArr.length - 1].slice(1);
+        const splitElements = evt.target.href.split(`#`);
+        const filterName = splitElements[splitElements.length - 1];
         handler(filterName);
       }
     };

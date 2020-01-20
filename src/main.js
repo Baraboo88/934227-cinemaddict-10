@@ -13,8 +13,8 @@ import Loading from "./components/loading";
 const STORE_PREFIX = `cinnemaddict-localstorage`;
 const STORE_VER = `v1`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
-const RANDOM_STRING = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-const AUTHORIZATION = `Basic ${RANDOM_STRING}`;
+const randomString = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+const AUTHORIZATION = `Basic ${randomString}`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/cinemaddict`;
 
 window.addEventListener(`load`, () => {
