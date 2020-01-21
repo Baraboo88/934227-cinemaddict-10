@@ -30,6 +30,8 @@ export default class MovieController {
     this._isInHistory = false;
     this.commentAddingPressHandler = this.commentAddingPressHandler.bind(this);
     this.escPressHandler = this.escPressHandler.bind(this);
+    this.onlineHandler = this.onlineHandler.bind(this);
+    this.offlineHandler = this.offlineHandler.bind(this);
   }
 
   setDefaultView() {
