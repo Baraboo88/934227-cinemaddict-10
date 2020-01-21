@@ -38,6 +38,9 @@ export default class MovieController {
       this._newFilmDetail.removeElement();
       this._mode = Mode.DEFAULT;
       document.removeEventListener(`keydown`, this.commentAddingPressHandler);
+      document.removeEventListener(`keydown`, this.escPressHandler);
+      window.removeEventListener(`online`, this.onlineHandler);
+      window.removeEventListener(`offline`, this.offlineHandler);
     }
   }
 
